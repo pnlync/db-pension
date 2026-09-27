@@ -376,6 +376,8 @@ def main():
     run_cv_numbers()
     from pension import disclosure
     disclosure.write(out, disclosure.aoc_tables(aoc_out))
+    from pension import site
+    site.write_all()
     print(f"IAS 19 DBO {out['dbo'] / 1e6:.1f}m, SEDR {out['assumptions']['sedr']:.2%}, duration {out['duration']:.1f}")
     print(f"FS {fs_out['liabilities']['total'] / 1e6:.1f}m, FS level {fs_out['fs_funding_level']:.1%}, "
           f"FSR {fs_out['fsr']['total'] / 1e6:.1f}m, FS + FSR cover {fs_out['fs_plus_fsr_cover']:.1%}")
