@@ -1,6 +1,6 @@
 # SPEC: DB Pension Scheme Model
 
-Version 1.2 (2026-09-27). Changes from 1.1: teach-back questions go into the module notes instead of being asked (§1); State Pension source, ILT15 range, CPI series and wind-up wording settled in M0 (§7); two limitations added (§13). Changes from 1.0 to 1.1: register date columns (§8), module notes (§1, §10), buy-in accounting condition (M11, M12), ECB curve date rule (§7.1), raw downloads folder (§7.1, §10).
+Version 1.2 (2026-09-27). Changes from 1.1: teach-back questions go into the module notes instead of being asked (§1); State Pension source, ILT15 range, wind-up wording settled in M0 (§7); deferred revaluation uses the official statutory percentages and 'CPI' means the annual average change (§4, §5, §7.1); one limitation added (§13). Changes from 1.0 to 1.1: register date columns (§8), module notes (§1, §10), buy-in accounting condition (M11, M12), ECB curve date rule (§7.1), raw downloads folder (§7.1, §10).
 
 A model of a synthetic Irish final-salary (defined benefit) pension scheme. It values the same member benefits under IAS 19 and under the Irish Funding Standard (with the funding standard reserve), explains the gap between the two, rolls the scheme forward through 2025 on actual market data, measures risk, sizes a funding proposal and prices a pensioner buy-in.
 
@@ -50,8 +50,8 @@ Out of scope for the core (list them as limitations): spouse's and dependants' p
 | Salary changes | 1 January each year |
 | Exits (withdrawal, retirement, death) | mid-year |
 | Pension payments | annual amount, paid at mid-year (t - 0.5) |
-| Pension increases | 1 January, by the previous year's CPI, floor 0%, cap 3% |
-| Deferred revaluation | CPI, cap 4% a year, can be negative |
+| Pension increases | 1 January, by the previous year's CPI annual average change, floor 0%, cap 3% |
+| Deferred revaluation | statutory revaluation percentage (Pensions Act s33): min(CPI annual average change, 4%), can be negative; official percentages for past years |
 | Survival for a payment in year t | average of survival to t - 1 and t |
 
 All bases use the same timing conventions. Record the monthly-versus-annual approximation as a limitation.
@@ -67,7 +67,7 @@ All bases use the same timing conventions. Record the monthly-versus-annual appr
 | Normal retirement age | 65 |
 | Member contributions | 5% of pensionable salary |
 | Leaver benefit | accrued pension at exit (service x PS at exit / 60), revalued to 65 |
-| Revaluation before retirement | CPI, cap 4% a year, can be negative |
+| Revaluation before retirement | statutory revaluation percentage: CPI annual average change, cap 4% a year, can be negative (no negatives before the 2015 revaluation year) |
 | Increases in payment | CPI, floor 0%, cap 3% |
 | Death | no benefit on death (v1) |
 
@@ -126,7 +126,8 @@ Keep a hidden answer key (`tests/fixtures/injected_errors.csv`) so M2 can prove 
 | French OAT 2032 nominal and OAT€i 2032 real yields | implied inflation proxy (Fisher); MVA check | SAI MVA page (end-2024: 2.97% and 1.00%; end-2025: 3.09% and 1.20%) |
 | CSO Irish Life Tables No. 15 (2005-2007), ages 0-105, M and F | base table for every basis | CSO ILT15 PDF (the only official format); the table stops at 105, the extension to 120 is set in M3 |
 | CSO Irish Life Tables No. 17 (2015-2017) | comparison only | CSO |
-| Irish CPI annual changes | historical deferred revaluation; 2025 experience | CSO CPM01; use the published December 12-month change (official annual revaluation percentages for preserved benefits were not located; limitation) |
+| Statutory revaluation percentages 1996-2025 | historical deferred revaluation; 2025 experience | Occupational Pension Schemes (Revaluation) Regulations, one S.I. a year (Irish Statute Book) |
+| Irish CPI annual average changes | pension increases in payment; 2025 experience | CSO CPM01 (annual average of the monthly index) |
 | 2025 equity index total return in EUR; EUR short rate (€STR) for 2025 | asset roll-forward | public index provider; ECB |
 
 Original downloads go in `data/market/raw/` (downloaded manually by the owner, not committed; see its README). Transcribed, cleaned files in `data/market/` are committed.
@@ -231,7 +232,7 @@ Each module lists purpose, inputs, method, outputs, acceptance tests and teach-b
 
 - A `Basis` object carries discount, inflation, salary growth, mortality, withdrawal, revaluation and increase rules and timing. `project_cashflows(members, basis)` returns expected cash flows by member and year; `pv(cashflows, curve)` discounts.
 - Pensioner: P x increases x survival.
-- Deferred: revalue the pension at exit to the valuation date with actual CPI (cap 4%, can be negative), then to 65 with the assumption, then pay as a pensioner.
+- Deferred: revalue the pension at exit to the valuation date with the official statutory revaluation percentages (first year pro rata by complete months after exit, per the Pensions Authority preservation notes para 155), then to 65 with the assumption, then pay as a pensioner.
 - Active: three outcomes each year until 65: withdraw (deferred pension n/60 x PS at exit, revalued to 65), die (nothing), retire at 65 (n/60 x PS at 65). Only completed service n counts (PUC).
 - Figure 1: expected payments stacked by status over about 60 years.
 - Tests: three representative members (one per status) reproduced in `validation/excel_checks.xlsx` within EUR 1; zero interest and zero mortality gives PV = sum of payments; member totals = scheme total; zero salary growth changes only actives; CPI 5% gives revaluation 4% and increases 3%.
@@ -428,4 +429,4 @@ If a real-data result moves the other way, explain which assumption caused it; d
 
 ## 13. Limitations to state
 
-Synthetic data and experience; simplified benefits (no spouses, early retirement, commutation, death benefits); AAA + spread instead of a true AA curve; OAT 2032 inflation proxy instead of the HICP swap curve; annual mid-year timing; annuity cost proxy and insurer loadings are illustrative; deterministic inflation understates the value of the 3% cap and 0% floor; funding proposal period per the Pensions Act not modelled; no derivatives, so their treatment in the FSR interest test is not tested; the FS liability for non-pensioners (transfer values) is not the cost of a guaranteed deferred-annuity buy-out; deferred revaluation uses CSO December CPI changes rather than the official annual revaluation orders.
+Synthetic data and experience; simplified benefits (no spouses, early retirement, commutation, death benefits); AAA + spread instead of a true AA curve; OAT 2032 inflation proxy instead of the HICP swap curve; annual mid-year timing; annuity cost proxy and insurer loadings are illustrative; deterministic inflation understates the value of the 3% cap and 0% floor; funding proposal period per the Pensions Act not modelled; no derivatives, so their treatment in the FSR interest test is not tested; the FS liability for non-pensioners (transfer values) is not the cost of a guaranteed deferred-annuity buy-out.

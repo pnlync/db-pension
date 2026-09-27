@@ -1,0 +1,37 @@
+# title: Statutory revaluation percentages for preserved benefits (Pensions Act 1990 s33), by revaluation year
+# source: Occupational Pension Schemes (Revaluation) Regulations, one S.I. per year, Irish Statute Book https://www.irishstatutebook.ie/eli/<year>/si/<number>/made/en/print; 2016: gov.ie press release 'Revaluation of Preserved Benefit' (28 March 2017); 2018-2025 cross-checked against the owner's Pensions Authority table
+# raw_file: none (read online)
+# effective_date: each revaluation year 1996-2025; percentage prescribed after the year ends
+# retrieved: 2026-09-27
+# notes: lesser of the Minister's CPI measure (in practice the CSO annual average CPI change) and 4%; no negative revaluation before the 2015 year (s33(7)); negative allowed from 2015 (-0.3%)
+revaluation_year,pct,instrument
+1996,1.6,S.I. No. 76/1997
+1997,1.5,S.I. No. 35/1998
+1998,2.4,S.I. No. 5/1999
+1999,1.6,S.I. No. 13/2000
+2000,4.0,S.I. No. 23/2001
+2001,4.0,S.I. No. 18/2002
+2002,4.0,S.I. No. 77/2003
+2003,3.5,S.I. No. 49/2004
+2004,2.2,S.I. No. 74/2005
+2005,2.5,S.I. No. 70/2006
+2006,4.0,S.I. No. 30/2007
+2007,4.0,S.I. No. 20/2008
+2008,4.0,S.I. No. 22/2009
+2009,0.0,"S.I. No. 47/2010 (no revaluation: prices fell, s33(7))"
+2010,0.0,"S.I. No. 38/2011 (no revaluation: prices fell, s33(7))"
+2011,2.6,S.I. No. 48/2012
+2012,1.7,S.I. No. 56/2013
+2013,0.5,S.I. No. 71/2014
+2014,0.2,S.I. No. 43/2015
+2015,-0.3,S.I. No. 152/2016
+2016,0.0,"none made: DSP announcement 28 March 2017, 2016 average CPI change 0.0%"
+2017,0.4,S.I. No. 35/2018
+2018,0.5,S.I. No. 31/2019
+2019,0.9,S.I. No. 52/2020
+2020,-0.3,S.I. No. 87/2021
+2021,2.4,S.I. No. 127/2022
+2022,4.0,S.I. No. 114/2023
+2023,4.0,S.I. No. 124/2024
+2024,2.1,S.I. No. 34/2025
+2025,2.2,S.I. No. 53/2026

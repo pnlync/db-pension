@@ -153,3 +153,25 @@ def test_pen3_table_interpolation_checks():
     assert np.all(np.diff(cap3) > 0)
     for p, fixed in ((0.01, 0.0115), (0.02, 0.0185), (0.03, 0.0240), (0.019, 0.0178)):
         assert round(float(np.interp(p, pi, cap3)), 4) == fixed
+
+
+# --- statutory revaluation of preserved benefits ----------------------------
+
+def test_revaluation_series_complete():
+    r = read("revaluation_ie.csv")
+    assert list(r.revaluation_year) == list(range(1996, 2026))
+    assert (r.pct <= 4.0).all()
+    assert (r[r.revaluation_year < 2015].pct >= 0).all()   # no negative revaluation before the 2015 year
+    known = {2018: 0.5, 2019: 0.9, 2020: -0.3, 2021: 2.4, 2022: 4.0, 2023: 4.0, 2024: 2.1, 2025: 2.2}
+    assert {y: p for y, p in zip(r.revaluation_year, r.pct) if y in known} == known
+
+
+def test_revaluation_follows_annual_average_cpi():
+    """Official % = min(annual average CPI change, 4%), floored at 0 before 2015, within 0.1pp."""
+    r = read("revaluation_ie.csv").set_index("revaluation_year").pct
+    cpi = read("cpi_ie.csv").set_index("year").pct_annual_avg
+    for year in range(1998, 2026):
+        rule = min(cpi[year], 4.0)
+        if year < 2015:
+            rule = max(rule, 0.0)
+        assert abs(r[year] - rule) <= 0.1 + 1e-9, (year, r[year], rule)

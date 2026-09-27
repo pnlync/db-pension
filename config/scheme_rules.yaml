@@ -7,12 +7,12 @@ max_service_years: 40
 spc_offset_multiple: 1.5        # pensionable salary = max(salary - 1.5 x SPC, 0)
 normal_retirement_age: 65
 member_contribution_rate: 0.05  # of pensionable salary
-revaluation:                    # deferreds, before retirement
-  index: CPI
+revaluation:                    # deferreds, before retirement: the statutory revaluation percentage (Pensions Act s33)
+  index: statutory              # history: data/market/revaluation_ie.csv; future: min(CPI annual average, 4%)
   cap: 0.04
-  floor: null                   # can be negative
-pension_increases:              # in payment, 1 January, previous year's CPI
-  index: CPI
+  floor: null                   # can be negative (statute: from the 2015 revaluation year)
+pension_increases:              # in payment, 1 January, previous year's CPI annual average change
+  index: CPI annual average     # data/market/cpi_ie.csv, pct_annual_avg
   cap: 0.03
   floor: 0.0
 death_benefit: none             # v1
