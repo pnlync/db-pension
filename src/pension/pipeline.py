@@ -7,7 +7,7 @@ from datetime import date
 import numpy as np
 import pandas as pd
 
-from pension import cashflows, excel_build, figures, ias19
+from pension import assets, cashflows, excel_build, figures, funding_standard, ias19, mva
 from pension.io import MEMBERS, OUTPUTS, ROOT, load_config
 
 CLOSING = date(2025, 12, 31)
@@ -24,7 +24,7 @@ def to_json(obj):
         return {str(k): to_json(v) for k, v in obj.items()}
     if isinstance(obj, (list, tuple)):
         return [to_json(v) for v in obj]
-    if isinstance(obj, (np.floating, np.integer)):
+    if isinstance(obj, (np.floating, np.integer, np.bool_)):
         return obj.item()
     return obj
 
@@ -76,7 +76,7 @@ def run_ias19(members=None, assets=None):
         "duration": r["duration"], "pv01": r["pv01"],
         "service_cost_2026": sc,
         "service_cost_pct_pensionable_payroll": sc["gross"] / sc["pensionable_payroll"],
-        "assets": assets, "assets_source": "placeholder: 97% of DBO until M8",
+        "assets": assets, "assets_source": "placeholder: 99% of DBO until M8",
         "net_liability": r["dbo"] - assets, "funding_level": assets / r["dbo"],
         "asset_ceiling": "not applicable: the scheme is in deficit, so IFRIC 14 does not restrict any asset",
         "pl_2026": {"employer_service_cost": sc["employer"], "net_interest": net_interest, "admin_expenses": admin,
@@ -94,6 +94,41 @@ def run_ias19(members=None, assets=None):
     return out, r
 
 
+def closing_market():
+    return assets.Market.at(CLOSING, "2025-12-31")
+
+
+def run_funding_standard(members, total_assets):
+    market = closing_market()
+    portfolio = assets.closing_portfolio(total_assets, market)
+    r = funding_standard.fsr(members, CLOSING, portfolio, market)
+    L = r["fs_liabilities"]
+    golden = mva.golden_test()
+    golden.to_csv(OUTPUTS / "mva_golden_test.csv", index=False)
+    b = funding_standard.annuity_basis(CLOSING)
+    out = {
+        "valuation_date": CLOSING.isoformat(),
+        "liabilities": {"actives": L["by_status"]["A"], "deferreds": L["by_status"]["D"],
+                        "pensioners": L["pensioners"], "non_pensioners": L["non_pensioners"],
+                        "wind_up_expenses": L["expenses"], "total": L["total"]},
+        "basis": {"mva_npa_index_linked": funding_standard.mva_npa_at(CLOSING),
+                  "mva_row_date": str(mva.row_for_effective_date(CLOSING).date),
+                  "annuity_pi": b.inflation, "annuity_fixed_increase": b.pension_increase,
+                  "insurer_spread": funding_standard.insurer()["fs_annuity_proxy"]["insurer_spread"]},
+        "assets": r["assets"], "qualifying_assets": r["qualifying_assets"],
+        "asset_values": portfolio.values(market),
+        "fs_funding_level": r["fs_funding_level"], "fs_met": r["fs_met"],
+        "fsr": {"proportion_part": r["proportion_part"], "interest_part": r["interest_part"], "total": r["fsr"],
+                "d_liabilities": r["d_liabilities"], "d_qualifying_assets": r["d_qualifying_assets"]},
+        "fs_plus_fsr": r["fs_plus_fsr"], "fs_plus_fsr_cover": r["fs_plus_fsr_cover"],
+        "fs_plus_fsr_met": r["fs_plus_fsr_met"], "shortfall_fs_plus_fsr": r["shortfall_fs_plus_fsr"],
+        "mva_golden_test": {"months": len(golden), "mva1_matched": int(golden.mva1_match.sum()),
+                            "mva2_matched": int(golden.mva2_match.sum())},
+    }
+    write_json("funding_standard_2025.json", out)
+    return out, r
+
+
 def run_excel(members, ias19_result):
     return excel_build.build(members, ias19_result["basis"], 0.0375, ias19_result["curve"])
 
@@ -101,10 +136,13 @@ def run_excel(members, ias19_result):
 def main():
     members = members_at(CLOSING)
     out, r = run_ias19(members)
+    fs_out, _ = run_funding_standard(members, out["assets"])
     run_excel(members, r)
     from pension import disclosure
     disclosure.write(out)
     print(f"IAS 19 DBO {out['dbo'] / 1e6:.1f}m, SEDR {out['assumptions']['sedr']:.2%}, duration {out['duration']:.1f}")
+    print(f"FS {fs_out['liabilities']['total'] / 1e6:.1f}m, FS level {fs_out['fs_funding_level']:.1%}, "
+          f"FSR {fs_out['fsr']['total'] / 1e6:.1f}m, FS + FSR cover {fs_out['fs_plus_fsr_cover']:.1%}")
 
 
 if __name__ == "__main__":

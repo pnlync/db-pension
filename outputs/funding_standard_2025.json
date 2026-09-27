@@ -1,0 +1,50 @@
+{
+  "valuation_date": "2025-12-31",
+  "liabilities": {
+    "actives": 45855889.02761217,
+    "deferreds": 27594376.749719433,
+    "pensioners": 125599250.4259423,
+    "non_pensioners": 73450265.77733159,
+    "wind_up_expenses": 3980990.324065478,
+    "total": 203030506.52733937
+  },
+  "basis": {
+    "mva_npa_index_linked": 1.2370036070667632,
+    "mva_row_date": "2025-11-30",
+    "annuity_pi": 0.019,
+    "annuity_fixed_increase": 0.0178,
+    "insurer_spread": 0.005
+  },
+  "assets": 204731225.5204422,
+  "qualifying_assets": 102365612.7602211,
+  "asset_values": {
+    "nominal_sovereigns": 61419367.65613265,
+    "inflation_linked_sovereigns": 30709683.828066327,
+    "corporates": 20473122.55204422,
+    "equities": 81892490.20817688,
+    "cash": 10236561.27602211
+  },
+  "fs_funding_level": 1.0083766672417467,
+  "fs_met": true,
+  "fsr": {
+    "proportion_part": 10066489.376711829,
+    "interest_part": 3093185.8216994107,
+    "total": 13159675.19841124,
+    "d_liabilities": {
+      "total": 7807355.841122538,
+      "pensioners": 6464065.292920858,
+      "non_pensioners": 1190205.1395522058,
+      "expenses": 153085.40864946134
+    },
+    "d_qualifying_assets": 4714170.019423127
+  },
+  "fs_plus_fsr": 216190181.7257506,
+  "fs_plus_fsr_cover": 0.9469959453577557,
+  "fs_plus_fsr_met": false,
+  "shortfall_fs_plus_fsr": 11458956.205308408,
+  "mva_golden_test": {
+    "months": 116,
+    "mva1_matched": 116,
+    "mva2_matched": 116
+  }
+}

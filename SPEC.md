@@ -1,6 +1,6 @@
 # SPEC: DB Pension Scheme Model
 
-Version 1.4 (2026-09-27). Changes from 1.3: M4 engine conventions (age nearest birthday, annual grid, known increases; notes/M4); M5 calibration results: AA spread 1.00%, IAS 19 mortality 66% / 75% ILT15 with 0.9% improvements, from Kerry, Glanbia and AIB 2025 annual reports (§8.1); ILT15 extended to 120 (M3). Changes from 1.2 to 1.3: active service at the opening date U(12, 35), since the scheme closed at end-2012; generator settings in `config/data_gen.yaml`; 'salary with an extra zero' is x10 (§6.2). Changes from 1.1 to 1.2: teach-back questions go into the module notes instead of being asked (§1); State Pension source, ILT15 range, wind-up wording settled in M0 (§7); deferred revaluation uses the official statutory percentages and 'CPI' means the annual average change (§4, §5, §7.1); one limitation added (§13). Changes from 1.0 to 1.1: register date columns (§8), module notes (§1, §10), buy-in accounting condition (M11, M12), ECB curve date rule (§7.1), raw downloads folder (§7.1, §10).
+Version 1.5 (2026-09-27). Changes from 1.4: insurer mortality 62% / 70% ILT15 with 1.2% improvements (about 90% of the calibrated IAS 19 qx, §8.2); asset design target 99% of IAS 19 DBO instead of 97% (§12), because at 2025 market levels the FS liability is 98% of the DBO; bond classes as single par bonds (§8.3). Changes from 1.3 to 1.4: M4 engine conventions (age nearest birthday, annual grid, known increases; notes/M4); M5 calibration results: AA spread 1.00%, IAS 19 mortality 66% / 75% ILT15 with 0.9% improvements, from Kerry, Glanbia and AIB 2025 annual reports (§8.1); ILT15 extended to 120 (M3). Changes from 1.2 to 1.3: active service at the opening date U(12, 35), since the scheme closed at end-2012; generator settings in `config/data_gen.yaml`; 'salary with an extra zero' is x10 (§6.2). Changes from 1.1 to 1.2: teach-back questions go into the module notes instead of being asked (§1); State Pension source, ILT15 range, wind-up wording settled in M0 (§7); deferred revaluation uses the official statutory percentages and 'CPI' means the annual average change (§4, §5, §7.1); one limitation added (§13). Changes from 1.0 to 1.1: register date columns (§8), module notes (§1, §10), buy-in accounting condition (M11, M12), ECB curve date rule (§7.1), raw downloads folder (§7.1, §10).
 
 A model of a synthetic Irish final-salary (defined benefit) pension scheme. It values the same member benefits under IAS 19 and under the Irish Funding Standard (with the funding standard reserve), explains the gap between the two, rolls the scheme forward through 2025 on actual market data, measures risk, sizes a funding proposal and prices a pensioner buy-in.
 
@@ -190,7 +190,7 @@ Calibrated in M5 (config/assumptions_ias19.yaml): AA spread 1.00% (2025 disclose
 | Annuity cost proxy discount (FS pensioners) | ECB AAA spot + insurer spread (state the value and rationale) |
 | Buy-in BEL discount | EIOPA RFR + VA |
 | Spread passed on to the scheme, s | 0 / 50 / 100 bp (sensitivity) |
-| Mortality | 52% (M) / 56% (F) of ILT15, improvements 1.5% a year from 2014 (roughly 90% of the IAS 19 rates; set independently) |
+| Mortality | 62% (M) / 70% (F) of ILT15, improvements 1.2% a year from 2014 (about 90% of the calibrated IAS 19 qx in 2026; set independently). v1.0 had 52% / 56% with 1.5%, relative to the prototype IAS 19 basis |
 | Expenses | EUR per policy per year, increasing with inflation |
 | RM | life-project Solvency II engine, 2027 rules; shocks: longevity (permanent 20% fall in qx) and expense |
 | Profit margin m | 1-3% of BEL (sensitivity) |
@@ -324,7 +324,7 @@ State: "Bridge effects are sequential rather than unique standalone decompositio
 - P&L = service cost + net interest + admin. OCI = experience, demographic and financial remeasurements + return on assets above interest income.
 - Deficit waterfall: opening deficit -> service cost less contributions -> net interest -> asset out/under-performance -> experience -> assumption changes -> closing deficit.
 - Simplified FS change: MVA change, annuity cost (curve) change, asset return, contributions less new accrual, member experience.
-- Calibrate opening assets (root finding) so that closing assets are about 97% of closing DBO and the scheme meets FS but not FS + FSR.
+- Calibrate opening assets (root finding) so that closing assets are about 99% of closing DBO (v1.5; 97% in v1.0) and the scheme meets FS but not FS + FSR.
 - Fill disclosure tables 2-4.
 - Tests: other < 0.1% of DBO; closing DBO equals independent revaluation; asset identity zero; net liability identity (closing = opening + P&L cost + OCI loss - employer contributions) zero.
 - Teach-back: the three largest drivers of the 2025 change; why service cost goes to P&L but salary experience to OCI.
@@ -413,7 +413,7 @@ db-pension-model/
 Design targets (tune the generator and opening assets to meet them):
 
 - IAS 19 DBO about EUR 200m (180-220m); pensioners 55-60% of DBO; duration 15-18 years.
-- At 2025-12-31 the scheme meets the Funding Standard but not FS + FSR.
+- At 2025-12-31 the scheme meets the Funding Standard but not FS + FSR. With 2025 market data the FS liability is 98% of the IAS 19 DBO (prototype 95%), so closing assets are set at 99% of the DBO (v1.5).
 
 Prototype (illustrative flat rates, Gompertz stand-in for ILT15; sanity ranges, not targets):
 

@@ -1,1 +1,27 @@
-# assumptions_insurer — SPEC §8.2. Filled in the relevant module; every value carries its source and date.
+# assumptions_insurer — SPEC §8.2. Insurer-style market view: the Funding Standard annuity cost proxy (M6)
+# and the pensioner buy-in pricing (M11). Illustrative; set independently of the IAS 19 basis.
+
+mortality:                          # annuitant best estimate, stronger than the scheme's IAS 19 basis
+  base_table: ILT15
+  multiplier: {M: 0.62, F: 0.70}
+  improvement: 0.012
+  base_year: 2014
+  rationale: "about 90% of the IAS 19 qx in 2026 and slightly faster improvements: male e65 23.6 years vs 22.1 on IAS 19. SPEC 1.0 started from 52%/56% with 1.5% relative to the prototype's IAS 19 basis; with the calibrated IAS 19 basis that would give e65 26.5, which is not credible, so the relation (about 90% of IAS 19 qx) was kept instead"
+
+fs_annuity_proxy:                   # ASP PEN-3 para 2.4(a): pensioners at the cost of buying annuities
+  discount: "ECB AAA spot + insurer spread"
+  insurer_spread: 0.0050
+  spread_rationale: "annuity writers back pensions with sovereign and high-grade corporate bonds; net of expected defaults and expenses they can price at about 50 bp over AAA (illustrative)"
+  inflation_for_pi: "market implied inflation at the valuation date (OAT 2032 Fisher proxy), rounded to 0.1% (PEN-3 appendix)"
+  increases: "fixed rate from the ASP PEN-3 appendix table (floor 0%, cap 3%) for PI"
+  curve_dates: {2024-12-31: 2024-12-30, 2025-12-31: 2025-12-31}
+
+buyin:                              # M11
+  bel_discount: "EIOPA risk-free rate with volatility adjustment, 2025-12-31"
+  spread_passed_on: [0.0, 0.005, 0.010]   # s, sensitivity; base 0.005
+  spread_passed_on_base: 0.005
+  expense_per_policy_eur: 75        # a year, rising with inflation
+  profit_margin: [0.01, 0.02, 0.03] # m, % of BEL, sensitivity; base 0.02
+  profit_margin_base: 0.02
+  longevity_shock: 0.20             # permanent fall in qx (Solvency II standard formula)
+  expense_shock: {level: 0.10, inflation_add: 0.01}   # Solvency II standard formula

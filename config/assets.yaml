@@ -1,7 +1,7 @@
 # assets — SPEC §8.3. Filled in the relevant module; every value carries its source and date.
 # Filled in M5 (allocation for disclosure table 5) and M8 (returns, bond modelling, opening-asset calibration).
 
-target_closing_ias19_funding_level: 0.97   # design target (SPEC §12): closing assets / closing DBO; replaced by the M8 roll-forward
+target_closing_ias19_funding_level: 0.99   # design target (SPEC §12, v1.5): meets FS but not FS + FSR at 2025 market levels; M8 calibrates opening assets to hit it
 
 allocation:                    # opening weights (SPEC §8.3)
   equities: 0.40               # global equities
@@ -9,7 +9,13 @@ allocation:                    # opening weights (SPEC §8.3)
   inflation_linked_sovereigns: 0.15   # euro, real duration ~10
   corporates: 0.10             # euro, duration ~6
   cash: 0.05
-qualifying_for_fsr: [nominal_sovereigns, inflation_linked_sovereigns, cash]
+qualifying_for_fsr: [nominal_sovereigns, inflation_linked_sovereigns, cash]   # Pensions Authority FSR FAQ (EU sovereigns, cash)
+
+bond_durations:                # target modified durations (SPEC §8.3); each class = one par bond with this duration
+  nominal_sovereigns: 10
+  inflation_linked_sovereigns: 10   # real duration
+  corporates: 6
+corporate_spread: 0.0100       # euro investment-grade corporates over AAA, illustrative (same order as the AA spread)
 
 contributions:                 # synthetic sponsor funding (input, SPEC §9 M8)
   member_rate: 0.05            # of pensionable salary (scheme rules)
