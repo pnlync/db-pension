@@ -96,6 +96,7 @@
     "fs_liability": 156147.11682245077,
     "assets_by_class": {
       "nominal_sovereigns": 60653.17584450543,
+      "long_sovereigns": 0.0,
       "inflation_linked_sovereigns": 30941.434149403125,
       "corporates": 12432.966187663376
     },

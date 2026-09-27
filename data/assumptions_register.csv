@@ -48,3 +48,6 @@ equity_return_2025,"+6.77% (MSCI World net total return in EUR, calendar 2025)",
 cash_return_2025,"+2.23% (€STR compounded daily, ACT/360; average rate 2.18%)",assets,ECB Data Portal EST.B.EU000A2X2A25.WT; data/market/estr_2025.csv,2025,2026-09-27,M8 asset roll-forward
 opening_assets_2024,"EUR 205.3m, solved so that 2025-12-31 assets = 99% of the DBO",synthetic,M8 calibration (linear solve),2024-12-31,2026-09-27,M8; closing assets EUR 204.7m
 rebalancing_2025_12_31,closing assets rebalanced to the strategic allocation,assets,modelling choice (M8),2025-12-31,2026-09-27,"M6 FSR, M9, M10, M11"
+expected_returns,"equities 6.5%, nominal sovereigns 3.0%, long sovereigns 3.3%, inflation-linked 3.0%, corporates 3.6%, cash 2.0% a year",assets,consistent with the 2025-12-31 ECB curves; equity risk premium ~3.5% illustrative (config/assets.yaml),2025-12-31,2026-09-27,M10 projection only (never IAS 19 interest income)
+funding_projection_basis,"IAS 19 closing best-estimate demographics, inflation and salary growth; yields, MVA and annuity pricing held at 2025-12-31; actives keep accruing",decisions,modelling choice (M10),2025-12-31,2026-09-27,M10
+investment_switch,20% of assets from global equities to euro sovereigns with duration ~15 (qualifying for the FSR),decisions,SPEC M10,2025-12-31,2026-09-27,M10

@@ -9,10 +9,11 @@ allocation:                    # opening weights (SPEC §8.3)
   inflation_linked_sovereigns: 0.15   # euro, real duration ~10
   corporates: 0.10             # euro, duration ~6
   cash: 0.05
-qualifying_for_fsr: [nominal_sovereigns, inflation_linked_sovereigns, cash]   # Pensions Authority FSR FAQ (EU sovereigns, cash)
+qualifying_for_fsr: [nominal_sovereigns, long_sovereigns, inflation_linked_sovereigns, cash]   # Pensions Authority FSR FAQ (EU sovereigns, cash)
 
 bond_durations:                # target modified durations (SPEC §8.3); each class = one par bond with this duration
   nominal_sovereigns: 10
+  long_sovereigns: 15          # used by the M10 switch (none held today)
   inflation_linked_sovereigns: 10   # real duration
   corporates: 6
 corporate_spread: 0.0100       # euro investment-grade corporates over AAA, illustrative (same order as the AA spread)
@@ -27,3 +28,17 @@ returns_2025:                  # actual 2025 market returns for the asset roll-f
   equities_source: "MSCI World Index (EUR) factsheet, annual performance table (net returns): https://www.msci.com/www/index-factsheets/msci-world-index/08490663 (raw: data/market/raw/msci_world_eur_factsheet.pdf, retrieved 2026-09-27)"
   cash: "€STR compounded daily over 2025 (data/market/estr_2025.csv)"
   bonds: "revalued from the 2024-12-30 to the 2025-12-31 ECB curves, one year shorter, plus the annual coupon"
+
+expected_returns:              # a year, for the funding projection (M10); yields held at 2025-12-31 levels
+  equities: 0.065              # ~3.0% 10-year AAA yield + ~3.5% equity risk premium (illustrative)
+  nominal_sovereigns: 0.030    # AAA spot at 10 years, 2025-12-31 (2.99% continuous)
+  long_sovereigns: 0.033       # AAA spot at 15 years (3.33%)
+  inflation_linked_sovereigns: 0.030   # real yield ~1.1% + inflation 1.87%
+  corporates: 0.036            # AAA 7 years 2.7% + 1.0% spread - 0.1% expected defaults
+  cash: 0.020                  # €STR at end-2025 (1.93%)
+  rationale: "best-estimate returns consistent with the 2025-12-31 curves; equity premium illustrative. Used only for projections, never for IAS 19 interest income"
+
+switch:                        # M10 investment experiment
+  from: equities
+  to: long_sovereigns
+  weight: 0.20

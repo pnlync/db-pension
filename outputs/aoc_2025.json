@@ -49,6 +49,7 @@
   },
   "asset_returns_2025": {
     "nominal_sovereigns": -0.020531574042371936,
+    "long_sovereigns": -0.07044184218484772,
     "inflation_linked_sovereigns": -0.04536809335698877,
     "corporates": 0.017957024770277163,
     "equities": 0.0677,
@@ -57,6 +58,7 @@
   "assets_by_class": {
     "opening": {
       "nominal_sovereigns": 61586207.680508785,
+      "long_sovereigns": 0.0,
       "inflation_linked_sovereigns": 30793103.840254392,
       "corporates": 20528735.893502932,
       "equities": 82114943.57401173,
@@ -64,6 +66,7 @@
     },
     "closing": {
       "nominal_sovereigns": 60321745.89752752,
+      "long_sovereigns": 0.0,
       "inflation_linked_sovereigns": 29396079.430478282,
       "corporates": 20897370.912445042,
       "equities": 87674125.25397234,

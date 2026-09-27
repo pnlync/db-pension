@@ -7,7 +7,7 @@ from datetime import date
 import numpy as np
 import pandas as pd
 
-from pension import aoc, assets, bridge, cashflows, risk, excel_build, figures, funding_standard, ias19, mva
+from pension import aoc, assets, bridge, cashflows, decisions, risk, excel_build, figures, funding_standard, ias19, mva
 from pension.io import MEMBERS, OUTPUTS, ROOT, load_config
 
 CLOSING = date(2025, 12, 31)
@@ -31,7 +31,7 @@ def to_json(obj):
 
 def write_json(name, data):
     OUTPUTS.mkdir(exist_ok=True)
-    (OUTPUTS / name).write_text(json.dumps(to_json(data), indent=2))
+    (OUTPUTS / name).write_text(json.dumps(to_json(data), indent=2, allow_nan=False))
 
 
 def life_expectancies(mortality, year):
@@ -182,6 +182,69 @@ def run_risk(members, total_assets):
     return out
 
 
+def run_decisions(members, total_assets):
+    """M10: funding projection, contribution solve (3 / 5 / 10 years), switch experiment, trustee table."""
+    cfg = load_config("assets")
+    rate_fall = load_config("statutory_ie")["fsr"]["interest_rate_fall"]
+    market = closing_market()
+    alloc = cfg["allocation"]
+    alloc_sw = decisions.allocation_after_switch(alloc)
+    dq = decisions.qualifying_sensitivity(total_assets, alloc, market, rate_fall)
+    dq_sw = decisions.qualifying_sensitivity(total_assets, alloc_sw, market, rate_fall)
+    proj = decisions.build_projection(members, 10)
+    solved = {}
+    for years in (3, 5, 10):
+        solved[years] = {"contributions_only": decisions.solve_contribution(proj, total_assets, alloc, dq, years),
+                         "switch_and_contributions": decisions.solve_contribution(proj, total_assets, alloc_sw, dq_sw, years)}
+    c3, c3_sw = solved[3]["contributions_only"], solved[3]["switch_and_contributions"]
+
+    def path(al, d, c):
+        return decisions.run_projection(proj, total_assets, al, d, c, 3)[:4]
+
+    paths = {"No action": path(alloc, dq, 0.0), "Contributions only": path(alloc, dq, c3),
+             "Switch only": path(alloc_sw, dq_sw, 0.0), "Switch + contributions": path(alloc_sw, dq_sw, c3_sw)}
+
+    # the switch at 2025-12-31: FSR, hedge ratios, -50 bp hit, expected return
+    def snapshot(al):
+        state = risk.base_state(members, CLOSING, total_assets, "2025-12-31")
+        state["portfolio"] = assets.Portfolio.from_allocation(total_assets, al, market, assets.durations())
+        f = funding_standard.fsr(members, CLOSING, state["portfolio"], market)
+        p = risk.pv01s(state, f)
+        base, down = risk.evaluate(state), risk.evaluate(state, rate_shift=-risk.SHIFT)
+        return {"fsr_proportion": f["proportion_part"], "fsr_interest": f["interest_part"], "fsr": f["fsr"],
+                "qualifying_assets": f["qualifying_assets"], "fs_plus_fsr_cover": f["fs_plus_fsr_cover"],
+                "shortfall": f["shortfall_fs_plus_fsr"], "hedge_ratio_ias19": p["hedge_ratio_ias19"],
+                "hedge_ratio_fs": p["hedge_ratio_fs"], "asset_pv01": p["assets"],
+                "ias19_funding_change_minus_50bp_pp": (down["ias19_funding_level"] - base["ias19_funding_level"]) * 100,
+                "fs_funding_change_minus_50bp_pp": (down["fs_funding_level"] - base["fs_funding_level"]) * 100,
+                "expected_return": decisions.expected_return(al),
+                "ias19_deficit": base["ias19_deficit"]}
+    now, now_sw = snapshot(alloc), snapshot(alloc_sw)
+    options = {
+        "Contributions only": {"allocation": "current", "c": c3, "snapshot": now, "cover_year_3": paths["Contributions only"][3]["cover"]},
+        "Switch only": {"allocation": "switch", "c": 0.0, "snapshot": now_sw, "cover_year_3": paths["Switch only"][3]["cover"]},
+        "Switch + contributions": {"allocation": "switch", "c": c3_sw, "snapshot": now_sw,
+                                   "cover_year_3": paths["Switch + contributions"][3]["cover"]},
+    }
+    table = [{"option": k, "deficit_contribution_a_year": v["c"], "contributions_over_3_years": 3 * v["c"],
+              "fs_plus_fsr_cover_now": v["snapshot"]["fs_plus_fsr_cover"], "fs_plus_fsr_cover_year_3": v["cover_year_3"],
+              "ias19_deficit_now": v["snapshot"]["ias19_deficit"],
+              "hedge_ratio_ias19": v["snapshot"]["hedge_ratio_ias19"], "hedge_ratio_fs": v["snapshot"]["hedge_ratio_fs"],
+              "ias19_funding_change_minus_50bp_pp": v["snapshot"]["ias19_funding_change_minus_50bp_pp"],
+              "expected_return": v["snapshot"]["expected_return"]} for k, v in options.items()]
+    out = {"note": "3 years is the base scenario; 5 and 10 years are strategic planning scenarios, not proposed "
+                   "statutory recovery periods. C is the total deficit contribution a year (replacing the current "
+                   "EUR 2.0m), paid mid-year; normal contributions continue.",
+           "solved_contribution": solved, "fs_path_10y": [x.total for x in proj.fs],
+           "switch": {"before": now, "after": now_sw,
+                      "shortfall_reduction": 1 - now_sw["shortfall"] / now["shortfall"]},
+           "paths_3y": paths, "trustee_table": table,
+           "expected_return_cost_of_switch_eur": (now["expected_return"] - now_sw["expected_return"]) * total_assets}
+    write_json("decisions_2025.json", out)
+    figures.fig4_paths(paths, {k: v["c"] for k, v in options.items()}, OUTPUTS / "fig4_funding_paths.png")
+    return out
+
+
 def run_bridge(members, fs_total, dbo):
     steps = bridge.run(members, CLOSING)
     out = {"steps": steps, "fs_minus_ias19": fs_total - dbo,
@@ -217,6 +280,28 @@ def run_cv_numbers():
         "mva_months_reproduced": fs_["mva_golden_test"]["months"],
         "excel_members_reconciled": 3,
     }
+    a, rk, dec = load("aoc_2025.json"), load("risk_2025.json"), load("decisions_2025.json")
+    if a:
+        w = a["deficit_waterfall"]
+        cv |= {"ias19_deficit_opening_m": round(w["opening_deficit"] / 1e6, 1),
+               "ias19_deficit_closing_m": round(w["closing_deficit"] / 1e6, 1),
+               "aoc_assumption_changes_m": round(w["assumption_changes"] / 1e6, 1),
+               "aoc_curve_m": round(a["dbo_reconciliation"]["curve"] / 1e6, 1),
+               "aoc_other_m": round(a["dbo_reconciliation"]["other"] / 1e6, 1),
+               "fs_level_opening_pct": round(a["opening"]["fs_funding_level"] * 100, 1),
+               "sedr_opening_pct": round(a["opening"]["sedr"] * 100, 2)}
+    if rk:
+        cv |= {"hedge_ratio_ias19_pct": round(rk["pv01"]["hedge_ratio_ias19"] * 100),
+               "hedge_ratio_fs_pct": round(rk["pv01"]["hedge_ratio_fs"] * 100)}
+    if dec:
+        sw = dec["switch"]
+        cv |= {"contribution_3y_m": round(dec["solved_contribution"]["3"]["contributions_only"] / 1e6, 1),
+               "contribution_3y_with_switch_m": round(dec["solved_contribution"]["3"]["switch_and_contributions"] / 1e6, 1),
+               "switch_weight_pct": round(load_config("assets")["switch"]["weight"] * 100),
+               "switch_shortfall_reduction_pct": round(sw["shortfall_reduction"] * 100),
+               "switch_hedge_ratio_ias19_pct": round(sw["after"]["hedge_ratio_ias19"] * 100),
+               "switch_hedge_ratio_fs_pct": round(sw["after"]["hedge_ratio_fs"] * 100),
+               "switch_expected_return_cost_m": round(dec["expected_return_cost_of_switch_eur"] / 1e6, 1)}
     write_json("cv_numbers.json", cv)
     return cv
 
@@ -232,6 +317,7 @@ def main():
     fs_out, _ = run_funding_standard(members, out["assets"])
     br = run_bridge(members, fs_out["liabilities"]["total"], out["dbo"])
     rk = run_risk(members, out["assets"])
+    dec = run_decisions(members, out["assets"])
     run_excel(members, r)
     run_cv_numbers()
     from pension import disclosure

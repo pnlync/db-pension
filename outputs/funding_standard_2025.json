@@ -19,6 +19,7 @@
   "qualifying_assets": 102365612.72119877,
   "asset_values": {
     "nominal_sovereigns": 61419367.632719256,
+    "long_sovereigns": 0.0,
     "inflation_linked_sovereigns": 30709683.816359628,
     "corporates": 20473122.544239756,
     "equities": 81892490.17695902,

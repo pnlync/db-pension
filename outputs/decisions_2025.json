@@ -1,0 +1,288 @@
+{
+  "note": "3 years is the base scenario; 5 and 10 years are strategic planning scenarios, not proposed statutory recovery periods. C is the total deficit contribution a year (replacing the current EUR 2.0m), paid mid-year; normal contributions continue.",
+  "solved_contribution": {
+    "3": {
+      "contributions_only": 4451252.014176839,
+      "switch_and_contributions": 3456492.0988812456
+    },
+    "5": {
+      "contributions_only": 3308806.3035576483,
+      "switch_and_contributions": 3263026.855590427
+    },
+    "10": {
+      "contributions_only": 2517345.872966905,
+      "switch_and_contributions": 3238783.410658341
+    }
+  },
+  "fs_path_10y": [
+    203030506.52733937,
+    206679314.52928835,
+    210504672.4897227,
+    214921129.98765478,
+    219428902.67555255,
+    224490214.62561062,
+    229635882.6595545,
+    234887481.22019306,
+    239449733.5368586,
+    243972034.3354462,
+    248123745.46445173
+  ],
+  "switch": {
+    "before": {
+      "fsr_proportion": 10066489.38061406,
+      "fsr_interest": 3093185.823496476,
+      "fsr": 13159675.204110537,
+      "qualifying_assets": 102365612.72119877,
+      "fs_plus_fsr_cover": 0.9469959449717906,
+      "shortfall": 11458956.289052367,
+      "hedge_ratio_ias19": 0.3231538631013068,
+      "hedge_ratio_fs": 0.6662151584896564,
+      "asset_pv01": 104027.57618157193,
+      "ias19_funding_change_minus_50bp_pp": -5.193315104016616,
+      "fs_funding_change_minus_50bp_pp": -1.197817315307148,
+      "expected_return": 0.0441,
+      "ias19_deficit": 2067992.2550188303
+    },
+    "after": {
+      "fsr_proportion": 5971864.871766112,
+      "fsr_interest": -156501.09561663866,
+      "fsr": 5815363.776149473,
+      "qualifying_assets": 143311857.80967826,
+      "fs_plus_fsr_cover": 0.9802981746533364,
+      "shortfall": 4114644.8610913157,
+      "hedge_ratio_ias19": 0.5155129728180655,
+      "hedge_ratio_fs": 1.0627833861970397,
+      "asset_pv01": 165950.561561469,
+      "ias19_funding_change_minus_50bp_pp": -3.7422274611470963,
+      "fs_funding_change_minus_50bp_pp": 0.3435030541025563,
+      "expected_return": 0.0377,
+      "ias19_deficit": 2067992.2550188303
+    },
+    "shortfall_reduction": 0.6409232431558922
+  },
+  "paths_3y": {
+    "No action": [
+      {
+        "year": 2025,
+        "assets": 204731225.44239753,
+        "fs": 203030506.52733937,
+        "fsr_proportion": 10066489.38061406,
+        "fsr_interest": 3093185.823496476,
+        "fsr": 13159675.204110537,
+        "required": 216190181.7314499,
+        "cover": 0.9469959449717906,
+        "fs_level": 1.0083766668573482
+      },
+      {
+        "year": 2026,
+        "assets": 207631092.266422,
+        "fs": 206679314.52928835,
+        "fsr_proportion": 10286376.839607736,
+        "fsr_interest": 3020105.9533681814,
+        "fsr": 13306482.792975917,
+        "required": 219985797.32226428,
+        "cover": 0.9438386241010666,
+        "fs_level": 1.0046050943187097
+      },
+      {
+        "year": 2027,
+        "assets": 210505425.80197063,
+        "fs": 210504672.4897227,
+        "fsr_proportion": 10525195.95887374,
+        "fsr_interest": 2984163.855606151,
+        "fsr": 13509359.814479891,
+        "required": 224014032.3042026,
+        "cover": 0.9396974985750546,
+        "fs_level": 1.0000035786010781
+      },
+      {
+        "year": 2028,
+        "assets": 213461897.36171037,
+        "fs": 214921129.98765478,
+        "fsr_proportion": 10819018.13067996,
+        "fsr_interest": 3018403.4327718513,
+        "fsr": 13837421.563451812,
+        "required": 228758551.5511066,
+        "cover": 0.9331318803792179,
+        "fs_level": 0.993210380821894
+      }
+    ],
+    "Contributions only": [
+      {
+        "year": 2025,
+        "assets": 204731225.44239753,
+        "fs": 203030506.52733937,
+        "fsr_proportion": 10066489.38061406,
+        "fsr_interest": 3093185.823496476,
+        "fsr": 13159675.204110537,
+        "required": 216190181.7314499,
+        "cover": 0.9469959449717906,
+        "fs_level": 1.0083766668573482
+      },
+      {
+        "year": 2026,
+        "assets": 212179435.50499648,
+        "fs": 206679314.52928835,
+        "fsr_proportion": 10058959.677679012,
+        "fsr_interest": 2915375.161673717,
+        "fsr": 12974334.839352729,
+        "required": 219653649.36864108,
+        "cover": 0.9659727307735245,
+        "fs_level": 1.0266118599639962
+      },
+      {
+        "year": 2027,
+        "assets": 219802694.2159407,
+        "fs": 210504672.4897227,
+        "fsr_proportion": 10060332.538175235,
+        "fsr_interest": 2770083.644303497,
+        "fsr": 12830416.182478731,
+        "required": 223335088.67220142,
+        "cover": 0.9841834327186922,
+        "fs_level": 1.0441701441409665
+      },
+      {
+        "year": 2028,
+        "assets": 227717518.55131102,
+        "fs": 214921129.98765478,
+        "fsr_proportion": 10106237.071199927,
+        "fsr_interest": 2690151.492456287,
+        "fsr": 12796388.563656215,
+        "required": 227717518.551311,
+        "cover": 1.0000000000000002,
+        "fs_level": 1.0595399278069646
+      }
+    ],
+    "Switch only": [
+      {
+        "year": 2025,
+        "assets": 204731225.44239753,
+        "fs": 203030506.52733937,
+        "fsr_proportion": 5971864.871766112,
+        "fsr_interest": -156501.09561663866,
+        "fsr": 5815363.776149473,
+        "required": 208845870.30348885,
+        "cover": 0.9802981746533364,
+        "fs_level": 1.0083766668573482
+      },
+      {
+        "year": 2026,
+        "assets": 206339625.03075188,
+        "fs": 206679314.52928835,
+        "fsr_proportion": 6224157.7007762045,
+        "fsr_interest": -225373.4931608215,
+        "fsr": 5998784.207615383,
+        "required": 212678098.73690376,
+        "cover": 0.9701968667963645,
+        "fs_level": 0.9983564417207881
+      },
+      {
+        "year": 2027,
+        "assets": 207855714.79084575,
+        "fs": 210504672.4897227,
+        "fsr_proportion": 6500567.21361307,
+        "fsr_interest": -254105.28375985008,
+        "fsr": 6246461.92985322,
+        "required": 216751134.4195759,
+        "cover": 0.9589602165056684,
+        "fs_level": 0.9874161572399004
+      },
+      {
+        "year": 2028,
+        "assets": 209384478.01382136,
+        "fs": 214921129.98765478,
+        "fsr_proportion": 6835199.537797985,
+        "fsr_interest": -211257.06380819995,
+        "fsr": 6623942.473989785,
+        "required": 221545072.46164456,
+        "cover": 0.9451100658087147,
+        "fs_level": 0.9742386801420994
+      }
+    ],
+    "Switch + contributions": [
+      {
+        "year": 2025,
+        "assets": 204731225.44239753,
+        "fs": 203030506.52733937,
+        "fsr_proportion": 5971864.871766112,
+        "fsr_interest": -156501.09561663866,
+        "fsr": 5815363.776149473,
+        "required": 208845870.30348885,
+        "cover": 0.9802981746533364,
+        "fs_level": 1.0083766668573482
+      },
+      {
+        "year": 2026,
+        "assets": 209860669.23073936,
+        "fs": 206679314.52928835,
+        "fsr_proportion": 5977684.606777081,
+        "fsr_interest": -362338.8838384887,
+        "fsr": 5615345.722938593,
+        "required": 212294660.25222695,
+        "cover": 0.9885348457724006,
+        "fs_level": 1.0153927097576094
+      },
+      {
+        "year": 2027,
+        "assets": 215030546.55716023,
+        "fs": 210504672.4897227,
+        "fsr_proportion": 5998328.989971054,
+        "fsr_interest": -533199.6603437318,
+        "fsr": 5465129.329627322,
+        "required": 215969801.81935,
+        "cover": 0.995650987988703,
+        "fs_level": 1.0215001121538454
+      },
+      {
+        "year": 2028,
+        "assets": 220350845.13771337,
+        "fs": 214921129.98765478,
+        "fsr_proportion": 6067553.839125544,
+        "fsr_interest": -637838.6890669614,
+        "fsr": 5429715.150058582,
+        "required": 220350845.13771337,
+        "cover": 1.0,
+        "fs_level": 1.025263756757516
+      }
+    ]
+  },
+  "trustee_table": [
+    {
+      "option": "Contributions only",
+      "deficit_contribution_a_year": 4451252.014176839,
+      "contributions_over_3_years": 13353756.042530518,
+      "fs_plus_fsr_cover_now": 0.9469959449717906,
+      "fs_plus_fsr_cover_year_3": 1.0000000000000002,
+      "ias19_deficit_now": 2067992.2550188303,
+      "hedge_ratio_ias19": 0.3231538631013068,
+      "hedge_ratio_fs": 0.6662151584896564,
+      "ias19_funding_change_minus_50bp_pp": -5.193315104016616,
+      "expected_return": 0.0441
+    },
+    {
+      "option": "Switch only",
+      "deficit_contribution_a_year": 0.0,
+      "contributions_over_3_years": 0.0,
+      "fs_plus_fsr_cover_now": 0.9802981746533364,
+      "fs_plus_fsr_cover_year_3": 0.9451100658087147,
+      "ias19_deficit_now": 2067992.2550188303,
+      "hedge_ratio_ias19": 0.5155129728180655,
+      "hedge_ratio_fs": 1.0627833861970397,
+      "ias19_funding_change_minus_50bp_pp": -3.7422274611470963,
+      "expected_return": 0.0377
+    },
+    {
+      "option": "Switch + contributions",
+      "deficit_contribution_a_year": 3456492.0988812456,
+      "contributions_over_3_years": 10369476.296643738,
+      "fs_plus_fsr_cover_now": 0.9802981746533364,
+      "fs_plus_fsr_cover_year_3": 1.0,
+      "ias19_deficit_now": 2067992.2550188303,
+      "hedge_ratio_ias19": 0.5155129728180655,
+      "hedge_ratio_fs": 1.0627833861970397,
+      "ias19_funding_change_minus_50bp_pp": -3.7422274611470963,
+      "expected_return": 0.0377
+    }
+  ],
+  "expected_return_cost_of_switch_eur": 1310279.8428313448
+}

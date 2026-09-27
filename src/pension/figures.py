@@ -116,3 +116,32 @@ def fig_tornado(results, path, market_date="2025-12-31"):
     fig.tight_layout(rect=(0, 0.05, 1, 1))
     fig.savefig(path, dpi=150)
     plt.close(fig)
+
+
+def fig4_paths(paths, contributions, path, market_date="2025-12-31"):
+    """Figure 4: assets / (FS + FSR) over the 3-year funding proposal under each option."""
+    fig, (ax, ax2) = plt.subplots(1, 2, figsize=(10, 4.4), gridspec_kw={"width_ratios": [2.2, 1]})
+    styles = {"No action": ("#999999", "--"), "Contributions only": ("#4C72B0", "-"),
+              "Switch only": ("#DD8452", "-"), "Switch + contributions": ("#55A868", "-")}
+    for name, p in paths.items():
+        colour, ls = styles[name]
+        ax.plot([x["year"] for x in p], [x["cover"] * 100 for x in p], ls, color=colour, marker="o", label=name)
+    ax.axhline(100, color="#C44E52", lw=0.8)
+    ax.set_ylabel("Assets / (FS + FSR), %")
+    ax.set_xticks([x["year"] for x in next(iter(paths.values()))])
+    ax.legend(frameon=False, fontsize=8)
+    ax.set_title("FS + FSR cover")
+    ax.spines[["top", "right"]].set_visible(False)
+    names = list(contributions)
+    ax2.bar(range(len(names)), [contributions[k] / 1e6 for k in names], color=[styles[k][0] for k in names])
+    for i, k in enumerate(names):
+        ax2.text(i, contributions[k] / 1e6, f"{contributions[k] / 1e6:.1f}", ha="center", va="bottom", fontsize=8)
+    ax2.set_xticks(range(len(names)), [k.replace(" + ", "\n+ ").replace(" only", "\nonly") for k in names], fontsize=8)
+    ax2.set_title("Deficit contributions, EUR m a year")
+    ax2.spines[["top", "right"]].set_visible(False)
+    fig.suptitle("Figure 4. Restoring the funding standard reserve over 3 years")
+    footnote(fig, f"Synthetic members. Yields held at {market_date}; expected returns in config/assets.yaml. "
+                  "3 years is the base scenario; the statutory period follows the Pensions Act.")
+    fig.tight_layout(rect=(0, 0.05, 1, 1))
+    fig.savefig(path, dpi=150)
+    plt.close(fig)

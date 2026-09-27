@@ -9,7 +9,8 @@ import numpy as np
 from pension.curves import Curve
 from pension.io import load_config, read_market
 
-BOND_CLASSES = ("nominal_sovereigns", "inflation_linked_sovereigns", "corporates")
+BOND_CLASSES = ("nominal_sovereigns", "long_sovereigns", "inflation_linked_sovereigns", "corporates")
+NOMINAL_SOVEREIGN = ("nominal_sovereigns", "long_sovereigns")   # valued on the AAA curve
 
 
 def config():
@@ -39,7 +40,7 @@ class Market:
 
     def discount(self, bond_class, t):
         t = np.asarray(t, dtype=float)
-        if bond_class == "nominal_sovereigns":
+        if bond_class in NOMINAL_SOVEREIGN:
             return self.aaa.shifted(self.shift).discount(t)
         if bond_class == "corporates":
             return self.aaa.with_spread(self.corporate_spread).shifted(self.shift).discount(t)

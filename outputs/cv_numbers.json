@@ -13,5 +13,21 @@
   "fs_funding_level_pct": 100.8,
   "fs_plus_fsr_shortfall_m": 11.5,
   "mva_months_reproduced": 116,
-  "excel_members_reconciled": 3
+  "excel_members_reconciled": 3,
+  "ias19_deficit_opening_m": 33.2,
+  "ias19_deficit_closing_m": 2.1,
+  "aoc_assumption_changes_m": -34.9,
+  "aoc_curve_m": -32.2,
+  "aoc_other_m": 0.0,
+  "fs_level_opening_pct": 97.4,
+  "sedr_opening_pct": 3.51,
+  "hedge_ratio_ias19_pct": 32,
+  "hedge_ratio_fs_pct": 67,
+  "contribution_3y_m": 4.5,
+  "contribution_3y_with_switch_m": 3.5,
+  "switch_weight_pct": 20,
+  "switch_shortfall_reduction_pct": 64,
+  "switch_hedge_ratio_ias19_pct": 52,
+  "switch_hedge_ratio_fs_pct": 106,
+  "switch_expected_return_cost_m": 1.3
 }

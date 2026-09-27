@@ -84,7 +84,7 @@ def roll_assets(opening_total, flows, cash_return, equity_return):
         bond = pf.bonds[c]
         aged = assets.Bond(bond.coupon, bond.maturity - 1)
         closing[c] = pf.units[c] * (aged.price(mk1, c) + bond.coupon)      # coupon received at the year end
-        returns[c] = closing[c] / opening[c] - 1
+        returns[c] = (aged.price(mk1, c) + bond.coupon) / bond.price(mk0, c) - 1   # per unit (defined if not held)
     closing["equities"] = opening["equities"] * (1 + equity_return)
     returns["equities"] = equity_return
     net_flow = flows["employer_contributions"] + flows["member_contributions"] - flows["benefits"] - flows["expenses"]
