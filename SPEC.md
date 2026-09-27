@@ -359,8 +359,8 @@ State: "Bridge effects are sequential rather than unique standalone decompositio
 - RM: computed in this project with the cost-of-capital method (Solvency II 2027 review parameters in assumptions_insurer.yaml): SCR for longevity (permanent 20% fall in qx) and expense (+10% level, +1% inflation), aggregated with the life-module correlation; future SCRs projected in proportion to the run-off of the BEL; interest-rate risk excluded as hedgeable. The life project's engine is the reference for the parameters, not a code dependency (v1.6). EIOPA RFR + VA at 2025-12-31 is copied from ../assurance/data/raw/.
 - Solvency II technical provisions TP = BEL + RM are the **benchmark**, not the price.
 - Premium = TP - spread passed on (difference between BEL at RFR + VA and at RFR + VA + s) + profit (m x BEL). Do not add a separate capital loading on top of RM.
-- Premium waterfall: pensioner IAS 19 DBO -> discount (AA to RFR + VA) -> insurer mortality -> expenses -> RM (= SII benchmark) -> spread passed on -> profit -> premium.
-- Compare with the M6 annuity cost proxy and record the difference.
+- Premium waterfall: pensioner IAS 19 DBO -> discount (AA to RFR + VA) -> increases (CPI assumption to the PEN-3 fixed rate; v1.6) -> insurer mortality -> expenses -> RM (= SII benchmark) -> spread passed on -> profit -> premium. The RM is discounted on the basic risk-free curve (no VA).
+- Compare with the M6 annuity cost proxy and record the difference, and the FS level if the FS pensioner basis were consistent with the quote (v1.6: the SII-based premium came out 7% above the proxy, so on the proxy basis the FS level falls on day one; reported as found, not tuned).
 - Day-one effects, for three ways of paying (pro rata, selling sovereigns, selling equities): IAS 19 (assuming the policy is a qualifying insurance policy that exactly matches the insured benefits, it is valued at the DBO of those benefits and OCI loss = premium - insured DBO; state this condition wherever the loss is reported; funding level); FS (purchased annuities offset liabilities, ASP PEN-3 para 2.7; FS level, FSR, FS + FSR cover); buy-out funding level (unchanged on day one); share of liability PV01 insured.
 - Tests: OCI loss identity exact (under the exact-match assumption); waterfall has zero residual; FS liability after = before minus the insured liability (expenses adjusted); insured PV01 = pensioner liability PV01.
 - Teach-back: why does the FS position improve while IAS 19 books a loss?
@@ -433,6 +433,7 @@ Synthetic data and experience; simplified benefits (no spouses, early retirement
 
 All dated 2026-09-27.
 
+- 1.6 (from 1.5), continued: M11 waterfall gains an increases step; RM discounted without VA; premium vs FS proxy reported as found.
 - 1.6 (from 1.5): scope of M8-M12 re-planned after gate v1 (end-to-end sketch before M8; AoC experience order; M9 slimmed; buy-in risk margin computed in this project; GitHub Pages page specified; M13 dropped to future work); modelling conventions written down (§4); prototype magnitudes are sanity checks only and CV wording follows the results (§11, §12).
 - 1.5 (from 1.4): insurer mortality 62% / 70% ILT15 with 1.2% improvements (about 90% of the calibrated IAS 19 qx, §8.2); asset design target 99% of IAS 19 DBO instead of 97% (§12), because at 2025 market levels the FS liability is 98% of the DBO; bond classes as single par bonds (§8.3).
 - 1.4 (from 1.3): M4 engine conventions (age nearest birthday, annual grid, known increases; notes/M4); M5 calibration results: AA spread 1.00%, IAS 19 mortality 66% / 75% ILT15 with 0.9% improvements, from Kerry, Glanbia and AIB 2025 annual reports (§8.1); ILT15 extended to 120 (M3).

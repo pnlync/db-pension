@@ -1,0 +1,258 @@
+{
+  "price": {
+    "bel": 133335567.9002184,
+    "bel_benefits": 132832594.52396972,
+    "bel_expenses": 502973.3762486713,
+    "scr_longevity": 12601588.049215019,
+    "scr_expense": 110583.20801443595,
+    "scr": 12629687.724733846,
+    "rm": 4968484.37037695,
+    "tp": 138304052.27059534,
+    "spread": 0.005,
+    "margin": 0.02,
+    "spread_passed_on": 6596685.889003918,
+    "profit": 2666711.358004368,
+    "premium": 134374077.7395958
+  },
+  "premium_pct_of_ias19_dbo": 1.173416160848113,
+  "tp_pct_of_ias19_dbo": 1.2077345033734697,
+  "waterfall": [
+    {
+      "step": 0,
+      "label": "Pensioner IAS 19 DBO",
+      "level": 114515277.88953742,
+      "effect": 114515277.88953742
+    },
+    {
+      "step": 1,
+      "label": "Discount: AA curve -> EIOPA RFR + VA",
+      "level": 126366317.07317664,
+      "effect": 11851039.183639213
+    },
+    {
+      "step": 2,
+      "label": "Increases: CPI assumption -> PEN-3 fixed rate",
+      "level": 125331838.95606378,
+      "effect": -1034478.1171128601
+    },
+    {
+      "step": 3,
+      "label": "Insurer mortality",
+      "level": 132832594.52396972,
+      "effect": 7500755.567905948
+    },
+    {
+      "step": 4,
+      "label": "Expenses",
+      "level": 133335567.9002184,
+      "effect": 502973.3762486726
+    },
+    {
+      "step": 5,
+      "label": "Risk margin (= Solvency II TP)",
+      "level": 138304052.27059534,
+      "effect": 4968484.370376945
+    },
+    {
+      "step": 6,
+      "label": "Spread passed on",
+      "level": 131707366.38159142,
+      "effect": -6596685.889003918
+    },
+    {
+      "step": 7,
+      "label": "Profit",
+      "level": 134374077.7395958,
+      "effect": 2666711.3580043763
+    }
+  ],
+  "premium_grid": {
+    "s=0.000": {
+      "m=0.01": 139637407.94959754,
+      "m=0.02": 140970763.6285997,
+      "m=0.03": 142304119.3076019
+    },
+    "s=0.005": {
+      "m=0.01": 133040722.0605936,
+      "m=0.02": 134374077.7395958,
+      "m=0.03": 135707433.41859797
+    },
+    "s=0.010": {
+      "m=0.01": 126981711.49376246,
+      "m=0.02": 128315067.17276464,
+      "m=0.03": 129648422.85176684
+    }
+  },
+  "vs_fs_annuity_proxy": {
+    "proxy": 125599250.4259423,
+    "premium": 134374077.7395958,
+    "premium_over_proxy": 0.06986369173299689,
+    "fs_liability_if_quote_consistent": 211980830.38726595,
+    "fs_level_if_quote_consistent": 0.9658006578631465
+  },
+  "day_one": {
+    "pro_rata": {
+      "method": "pro_rata",
+      "premium": 134374077.7395958,
+      "insured_ias19_dbo": 114515277.88953742,
+      "assets_sold": 134374077.7395958,
+      "assets_after_by_class": {
+        "nominal_sovereigns": 21107144.310840517,
+        "long_sovereigns": 0.0,
+        "inflation_linked_sovereigns": 10553572.155420259,
+        "corporates": 7035714.770280174,
+        "equities": 28142859.081120696,
+        "cash": 3517857.385140087
+      },
+      "ias19": {
+        "before": {
+          "assets": 204731225.44239753,
+          "funding_level": 0.9899999996226065,
+          "hedge_ratio": 0.3231538631013068
+        },
+        "after": {
+          "assets": 184872425.59233916,
+          "funding_level": 0.8939706235390118,
+          "oci_loss": 19858799.850058377,
+          "hedge_ratio": 0.43348426438584076
+        }
+      },
+      "fs": {
+        "before": {
+          "liabilities": 203030506.52733937,
+          "fs_level": 1.0083766668573482,
+          "fsr": 13159675.204110537,
+          "cover": 0.9469959449717906,
+          "shortfall": 11458956.289052367,
+          "qualifying": 102365612.72119877
+        },
+        "after": {
+          "liabilities": 74919271.09287822,
+          "fs_level": 0.9391061428718284,
+          "fsr": 3568025.379113048,
+          "cover": 0.896414462790283,
+          "shortfall": 8130148.769189537,
+          "qualifying": 35178573.85140086,
+          "fsr_proportion": 3974069.7241477366,
+          "fsr_interest": -406044.3450346887
+        },
+        "insured_liability": 125599250.4259423
+      },
+      "pv01_insured_share": {
+        "ias19": 0.3224304472271634,
+        "fs": 0.8279455201559581
+      },
+      "insured_pv01_ias19": 103794.69887898862,
+      "buy_out_funding_level": "unchanged on day one: the policy is valued at its price"
+    },
+    "sell_sovereigns": {
+      "method": "sell_sovereigns",
+      "premium": 134374077.7395958,
+      "insured_ias19_dbo": 114515277.88953742,
+      "assets_sold": 134374077.73959583,
+      "assets_after_by_class": {
+        "nominal_sovereigns": 0.0,
+        "long_sovereigns": 0.0,
+        "inflation_linked_sovereigns": 0.0,
+        "corporates": 12792208.673236677,
+        "equities": 51168834.69294671,
+        "cash": 6396104.336618339
+      },
+      "ias19": {
+        "before": {
+          "assets": 204731225.44239753,
+          "funding_level": 0.9899999996226065,
+          "hedge_ratio": 0.3231538631013068
+        },
+        "after": {
+          "assets": 184872425.59233916,
+          "funding_level": 0.8939706235390118,
+          "oci_loss": 19858799.850058377,
+          "hedge_ratio": 0.3465626560200056
+        }
+      },
+      "fs": {
+        "before": {
+          "liabilities": 203030506.52733937,
+          "fs_level": 1.0083766668573482,
+          "fsr": 13159675.204110537,
+          "cover": 0.9469959449717906,
+          "shortfall": 11458956.289052367,
+          "qualifying": 102365612.72119877
+        },
+        "after": {
+          "liabilities": 74919271.09287822,
+          "fs_level": 0.9391061428718281,
+          "fsr": 8066325.917969236,
+          "cover": 0.8478236011678627,
+          "shortfall": 12628449.308045745,
+          "qualifying": 6396104.336618339,
+          "fsr_proportion": 6852316.675625989,
+          "fsr_interest": 1214009.242343247
+        },
+        "insured_liability": 125599250.4259423
+      },
+      "pv01_insured_share": {
+        "ias19": 0.3224304472271634,
+        "fs": 0.8279455201559581
+      },
+      "insured_pv01_ias19": 103794.69887898862,
+      "buy_out_funding_level": "unchanged on day one: the policy is valued at its price"
+    },
+    "sell_equities": {
+      "method": "sell_equities",
+      "premium": 134374077.7395958,
+      "insured_ias19_dbo": 114515277.88953742,
+      "assets_sold": 134374077.73959577,
+      "assets_after_by_class": {
+        "nominal_sovereigns": 35178573.85140087,
+        "long_sovereigns": 0.0,
+        "inflation_linked_sovereigns": 17589286.925700434,
+        "corporates": 11726191.283800293,
+        "equities": 0.0,
+        "cash": 5863095.641900146
+      },
+      "ias19": {
+        "before": {
+          "assets": 204731225.44239753,
+          "funding_level": 0.9899999996226065,
+          "hedge_ratio": 0.3231538631013068
+        },
+        "after": {
+          "assets": 184872425.59233916,
+          "funding_level": 0.8939706235390118,
+          "oci_loss": 19858799.850058377,
+          "hedge_ratio": 0.5075201424916045
+        }
+      },
+      "fs": {
+        "before": {
+          "liabilities": 203030506.52733937,
+          "fs_level": 1.0083766668573482,
+          "fsr": 13159675.204110537,
+          "cover": 0.9469959449717906,
+          "shortfall": 11458956.289052367,
+          "qualifying": 102365612.72119877
+        },
+        "after": {
+          "liabilities": 74919271.09287822,
+          "fs_level": 0.9391061428718285,
+          "fsr": 142751.39743437036,
+          "cover": 0.93732017028827,
+          "shortfall": 4704874.787510842,
+          "qualifying": 58630956.419001445,
+          "fsr_proportion": 1628831.4673876779,
+          "fsr_interest": -1486080.0699533075
+        },
+        "insured_liability": 125599250.4259423
+      },
+      "pv01_insured_share": {
+        "ias19": 0.3224304472271634,
+        "fs": 0.8279455201559581
+      },
+      "insured_pv01_ias19": 103794.69887898862,
+      "buy_out_funding_level": "unchanged on day one: the policy is valued at its price"
+    }
+  },
+  "note": "Two liability measures (IAS 19, Funding Standard) plus one transaction price. The IAS 19 OCI loss assumes a qualifying insurance policy that exactly matches the insured benefits."
+}

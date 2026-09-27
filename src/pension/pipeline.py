@@ -7,7 +7,7 @@ from datetime import date
 import numpy as np
 import pandas as pd
 
-from pension import aoc, assets, bridge, cashflows, decisions, risk, excel_build, figures, funding_standard, ias19, mva
+from pension import aoc, assets, bridge, buyin, cashflows, decisions, risk, excel_build, figures, funding_standard, ias19, mva
 from pension.io import MEMBERS, OUTPUTS, ROOT, load_config
 
 CLOSING = date(2025, 12, 31)
@@ -245,6 +245,44 @@ def run_decisions(members, total_assets):
     return out
 
 
+def run_buyin(members, total_assets, fs_out):
+    """M11: Solvency II benchmark, premium, waterfall, day-one effects on IAS 19, FS and FSR."""
+    pensioners = members[members.status == "P"]
+    priced = buyin.price(pensioners, CLOSING)
+    steps = buyin.waterfall(pensioners, CLOSING, priced)
+    cfg = buyin.config()["buyin"]
+    grid = {f"s={s:.3f}": {f"m={m:.2f}": buyin.price(pensioners, CLOSING, s, m)["premium"]
+                           for m in cfg["profit_margin"]} for s in cfg["spread_passed_on"]}
+    effects = {meth: buyin.day_one(members, CLOSING, total_assets, priced, meth)
+               for meth in ("pro_rata", "sell_sovereigns", "sell_equities")}
+    proxy = fs_out["liabilities"]["pensioners"]
+    fs_quote = fs_out["liabilities"]["non_pensioners"] + priced["premium"]
+    fs_quote += funding_standard.wind_up_expenses(fs_quote)
+    pro = effects["pro_rata"]
+    out = {"price": priced, "premium_pct_of_ias19_dbo": priced["premium"] / pro["insured_ias19_dbo"],
+           "tp_pct_of_ias19_dbo": priced["tp"] / pro["insured_ias19_dbo"], "waterfall": steps,
+           "premium_grid": grid,
+           "vs_fs_annuity_proxy": {"proxy": proxy, "premium": priced["premium"],
+                                   "premium_over_proxy": priced["premium"] / proxy - 1,
+                                   "fs_liability_if_quote_consistent": fs_quote,
+                                   "fs_level_if_quote_consistent": total_assets / fs_quote},
+           "day_one": effects,
+           "note": "Two liability measures (IAS 19, Funding Standard) plus one transaction price. The IAS 19 OCI loss "
+                   "assumes a qualifying insurance policy that exactly matches the insured benefits."}
+    write_json("buyin_2025.json", out)
+    compare = {"Before": {"IAS 19 funding level": pro["ias19"]["before"]["funding_level"],
+                          "FS funding level": pro["fs"]["before"]["fs_level"],
+                          "FS + FSR cover": pro["fs"]["before"]["cover"]},
+               "After (pay pro rata)": {"IAS 19 funding level": pro["ias19"]["after"]["funding_level"],
+                                        "FS funding level": pro["fs"]["after"]["fs_level"],
+                                        "FS + FSR cover": pro["fs"]["after"]["cover"]},
+               "After (sell equities)": {"IAS 19 funding level": effects["sell_equities"]["ias19"]["after"]["funding_level"],
+                                         "FS funding level": effects["sell_equities"]["fs"]["after"]["fs_level"],
+                                         "FS + FSR cover": effects["sell_equities"]["fs"]["after"]["cover"]}}
+    figures.fig5_buyin(steps, compare, OUTPUTS / "fig5_buyin.png")
+    return out
+
+
 def run_bridge(members, fs_total, dbo):
     steps = bridge.run(members, CLOSING)
     out = {"steps": steps, "fs_minus_ias19": fs_total - dbo,
@@ -302,6 +340,21 @@ def run_cv_numbers():
                "switch_hedge_ratio_ias19_pct": round(sw["after"]["hedge_ratio_ias19"] * 100),
                "switch_hedge_ratio_fs_pct": round(sw["after"]["hedge_ratio_fs"] * 100),
                "switch_expected_return_cost_m": round(dec["expected_return_cost_of_switch_eur"] / 1e6, 1)}
+    bi = load("buyin_2025.json")
+    if bi:
+        pro, eq = bi["day_one"]["pro_rata"], bi["day_one"]["sell_equities"]
+        cv |= {"buyin_premium_m": round(bi["price"]["premium"] / 1e6, 1),
+               "buyin_premium_pct_ias19": round(bi["premium_pct_of_ias19_dbo"] * 100),
+               "buyin_tp_pct_ias19": round(bi["tp_pct_of_ias19_dbo"] * 100),
+               "buyin_oci_loss_m": round(pro["ias19"]["after"]["oci_loss"] / 1e6, 1),
+               "buyin_ias19_level_before_pct": round(pro["ias19"]["before"]["funding_level"] * 100, 1),
+               "buyin_ias19_level_after_pct": round(pro["ias19"]["after"]["funding_level"] * 100, 1),
+               "buyin_fsr_before_m": round(pro["fs"]["before"]["fsr"] / 1e6, 1),
+               "buyin_fsr_after_m": round(pro["fs"]["after"]["fsr"] / 1e6, 1),
+               "buyin_pv01_insured_ias19_pct": round(pro["pv01_insured_share"]["ias19"] * 100),
+               "buyin_pv01_insured_fs_pct": round(pro["pv01_insured_share"]["fs"] * 100),
+               "buyin_premium_over_fs_proxy_pct": round(bi["vs_fs_annuity_proxy"]["premium_over_proxy"] * 100, 1),
+               "buyin_shortfall_after_sell_equities_m": round(eq["fs"]["after"]["shortfall"] / 1e6, 1)}
     write_json("cv_numbers.json", cv)
     return cv
 
@@ -318,6 +371,7 @@ def main():
     br = run_bridge(members, fs_out["liabilities"]["total"], out["dbo"])
     rk = run_risk(members, out["assets"])
     dec = run_decisions(members, out["assets"])
+    bi = run_buyin(members, out["assets"], fs_out)
     run_excel(members, r)
     run_cv_numbers()
     from pension import disclosure

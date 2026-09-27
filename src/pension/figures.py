@@ -145,3 +145,38 @@ def fig4_paths(paths, contributions, path, market_date="2025-12-31"):
     fig.tight_layout(rect=(0, 0.05, 1, 1))
     fig.savefig(path, dpi=150)
     plt.close(fig)
+
+
+def fig5_buyin(steps, compare, path, market_date="2025-12-31"):
+    """Figure 5: premium build-up (left) and the three measures before / after on day one (right)."""
+    fig, (ax, ax2) = plt.subplots(1, 2, figsize=(11, 4.8), gridspec_kw={"width_ratios": [1.6, 1]})
+    short = ["Pensioner\nIAS 19 DBO", "EIOPA\nRFR + VA", "Fixed-rate\nincreases", "Insurer\nmortality", "Expenses",
+             "Risk\nmargin", "Spread\npassed on", "Profit"]
+    waterfall(ax, short[:-1] + [short[-1]], steps[0]["level"] / 1e6, [s["effect"] / 1e6 for s in steps[1:]],
+              "Premium")
+    ax.set_ylim(steps[0]["level"] / 1e6 * 0.85, None)
+    ax.set_ylabel("EUR m")
+    ax.set_title("Buy-in premium (Solvency II TP is the benchmark, not the price)", fontsize=10)
+    labels = list(compare)
+    measures = ["IAS 19 funding level", "FS funding level", "FS + FSR cover"]
+    width = 0.8 / len(labels)
+    colours = ["#999999", "#4C72B0", "#55A868"]
+    for i, lab in enumerate(labels):
+        vals = [compare[lab][mm] * 100 for mm in measures]
+        xs = np.arange(len(measures)) + i * width
+        ax2.bar(xs, vals, width, label=lab, color=colours[i % 3])
+        for x, v in zip(xs, vals):
+            ax2.text(x, v, f"{v:.0f}", ha="center", va="bottom", fontsize=7)
+    ax2.axhline(100, color="#C44E52", lw=0.8)
+    ax2.set_xticks(np.arange(len(measures)) + width * (len(labels) - 1) / 2, measures, fontsize=8)
+    ax2.set_ylim(80, None)
+    ax2.set_ylabel("%")
+    ax2.legend(frameon=False, fontsize=7)
+    ax2.set_title("Day one: before and after", fontsize=10)
+    ax2.spines[["top", "right"]].set_visible(False)
+    fig.suptitle("Figure 5. Pensioner buy-in: price and day-one effects")
+    footnote(fig, f"Synthetic members. EIOPA RFR + VA and ECB curves at {market_date}. IAS 19 effect assumes a "
+                  "qualifying insurance policy that exactly matches the insured benefits. Illustrative price.")
+    fig.tight_layout(rect=(0, 0.05, 1, 1))
+    fig.savefig(path, dpi=150)
+    plt.close(fig)

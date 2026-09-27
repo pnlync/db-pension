@@ -29,5 +29,17 @@
   "switch_shortfall_reduction_pct": 64,
   "switch_hedge_ratio_ias19_pct": 52,
   "switch_hedge_ratio_fs_pct": 106,
-  "switch_expected_return_cost_m": 1.3
+  "switch_expected_return_cost_m": 1.3,
+  "buyin_premium_m": 134.4,
+  "buyin_premium_pct_ias19": 117,
+  "buyin_tp_pct_ias19": 121,
+  "buyin_oci_loss_m": 19.9,
+  "buyin_ias19_level_before_pct": 99.0,
+  "buyin_ias19_level_after_pct": 89.4,
+  "buyin_fsr_before_m": 13.2,
+  "buyin_fsr_after_m": 3.6,
+  "buyin_pv01_insured_ias19_pct": 32,
+  "buyin_pv01_insured_fs_pct": 83,
+  "buyin_premium_over_fs_proxy_pct": 7.0,
+  "buyin_shortfall_after_sell_equities_m": 4.7
 }

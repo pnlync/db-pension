@@ -25,3 +25,10 @@ buyin:                              # M11
   profit_margin_base: 0.02
   longevity_shock: 0.20             # permanent fall in qx (Solvency II standard formula)
   expense_shock: {level: 0.10, inflation_add: 0.01}   # Solvency II standard formula
+
+solvency2:                          # risk margin by the cost-of-capital method (M11), same parameters as ../assurance
+  cost_of_capital: 0.0475           # Delegated Regulation (EU) 2026/269 (2027 review)
+  time_weight_decay: 0.96           # weight max(0.96^t, 0.5) on future SCRs
+  time_weight_floor: 0.5
+  life_correlation_longevity_expense: 0.25   # Delegated Regulation (EU) 2015/35 Art. 136
+  curve_file: eiopa_rfr_va_2025-12-31

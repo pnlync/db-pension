@@ -16,3 +16,4 @@ Third-party source files, downloaded manually by the owner. Everything in this f
 | 10 | `sw19_rates_of_payment_2025.pdf` | Department of Social Protection, Rates of Payment 2025 (SW19): https://assets.gov.ie/316129/3bed9acc-015f-4161-8221-8eaa444f917c.pdf | SPC 2025: EUR 289.30/week (2024-12-31 valuation) |
 | 11 | `msci_world_eur_factsheet.pdf` | MSCI World Index (EUR) factsheet, current month (its annual performance table shows calendar year 2025): https://www.msci.com/www/index-factsheets/msci-world-index/08490663 (use the "Net" EUR factsheet PDF) | M8: 2025 equity total return in EUR |
 | 12 | `ecb_estr_2025.csv` | ECB Data Portal API, €STR daily: https://data-api.ecb.europa.eu/service/data/EST/B.EU000A2X2A25.WT?startPeriod=2025-01-01&endPeriod=2025-12-31&format=csvdata | M8: 2025 cash return |
+| 13 | `EIOPA_RFR_20251231.zip` | EIOPA risk-free rate publication for 2025-12-31 (copied from `../assurance/data/raw/`) | M11: buy-in BEL (RFR + VA) |
