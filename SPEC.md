@@ -1,6 +1,6 @@
 # SPEC: DB Pension Scheme Model
 
-Version 1.3 (2026-09-27). Changes from 1.2: active service at the opening date U(12, 35), since the scheme closed at end-2012; generator settings in `config/data_gen.yaml`; 'salary with an extra zero' is x10 (§6.2). Changes from 1.1 to 1.2: teach-back questions go into the module notes instead of being asked (§1); State Pension source, ILT15 range, wind-up wording settled in M0 (§7); deferred revaluation uses the official statutory percentages and 'CPI' means the annual average change (§4, §5, §7.1); one limitation added (§13). Changes from 1.0 to 1.1: register date columns (§8), module notes (§1, §10), buy-in accounting condition (M11, M12), ECB curve date rule (§7.1), raw downloads folder (§7.1, §10).
+Version 1.4 (2026-09-27). Changes from 1.3: M4 engine conventions (age nearest birthday, annual grid, known increases; notes/M4); M5 calibration results: AA spread 1.00%, IAS 19 mortality 66% / 75% ILT15 with 0.9% improvements, from Kerry, Glanbia and AIB 2025 annual reports (§8.1); ILT15 extended to 120 (M3). Changes from 1.2 to 1.3: active service at the opening date U(12, 35), since the scheme closed at end-2012; generator settings in `config/data_gen.yaml`; 'salary with an extra zero' is x10 (§6.2). Changes from 1.1 to 1.2: teach-back questions go into the module notes instead of being asked (§1); State Pension source, ILT15 range, wind-up wording settled in M0 (§7); deferred revaluation uses the official statutory percentages and 'CPI' means the annual average change (§4, §5, §7.1); one limitation added (§13). Changes from 1.0 to 1.1: register date columns (§8), module notes (§1, §10), buy-in accounting condition (M11, M12), ECB curve date rule (§7.1), raw downloads folder (§7.1, §10).
 
 A model of a synthetic Irish final-salary (defined benefit) pension scheme. It values the same member benefits under IAS 19 and under the Irish Funding Standard (with the funding standard reserve), explains the gap between the two, rolls the scheme forward through 2025 on actual market data, measures risk, sizes a funding proposal and prices a pensioner buy-in.
 
@@ -180,6 +180,8 @@ They share only the member data and the ILT15 base table. `funding_standard.py` 
 | Admin expenses | per member per year, through P&L |
 
 Mortality form: `q(x, y) = mult x q_ILT15(x) x (1 - imp)^max(y - 2014, 0)`, followed along the cohort diagonal from the valuation year. Prototype check: e65 = 23.1 (male aged 65 now), 25.0 (male aged 45 now, at 65).
+
+Calibrated in M5 (config/assumptions_ias19.yaml): AA spread 1.00% (2025 disclosed IAS 19 discount rates of Kerry 4.30%, Glanbia 4.15%, AIB 4.21% less the ECB AAA spot at their durations: mean 102 bp); mortality 66% (M) / 75% (F) of ILT15 with 0.9% a year improvements (Kerry and Glanbia disclosed e65: male 22 now / 23.4-24 in 20 years; female 24-24.5 / 25.9-26). Admin expenses EUR 300 per member a year.
 
 ### 8.2 Insurer (`assumptions_insurer.yaml`)
 

@@ -1,21 +1,21 @@
 member_id,rule,field,detail,action
-M0626,uniqueness,member_id,2 records,exact duplicate row removed
-M0858,uniqueness,member_id,2 records,exact duplicate row removed
+M0628,uniqueness,member_id,2 records,exact duplicate row removed
+M0859,uniqueness,member_id,2 records,exact duplicate row removed
 M1011,traceability,member_id,not in 2024-12-31 data and no movement,excluded from the valuation; query administrator
 M1012,traceability,member_id,not in 2024-12-31 data and no movement,excluded from the valuation; query administrator
-M0177,completeness,date_of_birth,missing,restored from 2024-12-31 data (1954-11-26)
+M0176,completeness,date_of_birth,missing,restored from 2024-12-31 data (1976-02-04)
 M0334,date_order,date_of_birth,"birth 1987-01-06, joined 1984-09-19, exit 2010-08-10",date of birth restored from 2024-12-31 data (1962-03-18)
-M0494,completeness,date_of_birth,missing,restored from 2024-12-31 data (1961-04-09)
-M0682,completeness,date_of_birth,missing,restored from 2024-12-31 data (1946-12-04)
-M0730,date_order,date_of_birth,"birth 2013-09-29, joined 2010-07-11, exit 2020-10-16",date of birth restored from 2024-12-31 data (1987-01-15)
+M0495,completeness,date_of_birth,missing,restored from 2024-12-31 data (1986-04-06)
+M0683,completeness,date_of_birth,missing,restored from 2024-12-31 data (1955-07-31)
+M0731,date_order,date_of_birth,"birth 2013-06-07, joined 2010-03-19, exit None",date of birth restored from 2024-12-31 data (1988-03-18)
 M0013,service_vs_age,pensionable_service,service 33.3979 > age 43.2 - 18,recomputed from date joined to the valuation date (21.2485)
-M0093,active_no_exit_date,date_left/date_retired,"left nan, retired 2025-11-09",no exit in the movement report: exit date removed
-M0094,salary_range,salary,"salary 1,014,730",replaced by the 1 January 2025 salary in the movement report (101473.0)
-M0183,pension_positive,pension_in_payment,pension_in_payment 0.0,replaced by the 2025 amount in the movement report (21855.03)
+M0093,salary_range,salary,"salary 611,570",replaced by the 1 January 2025 salary in the movement report (61157.0)
+M0094,active_no_exit_date,date_left/date_retired,"left nan, retired 2025-11-09",no exit in the movement report: exit date removed
+M0177,pension_positive,pension_in_payment,pension_in_payment 0.0,replaced by the 2025 amount in the movement report (17823.05)
 M0217,active_no_exit_date,date_left/date_retired,"left nan, retired 2025-08-26",no exit in the movement report: exit date removed
 M0589,pension_positive,pension_in_payment,pension_in_payment 0.0,replaced by the 2025 amount in the movement report (14657.97)
 M0646,salary_range,salary,"salary 877,080",replaced by the 1 January 2025 salary in the movement report (87708.0)
+M0789,deferred_no_salary,salary,salary 60706.0,salary removed (not used for deferreds)
 M0798,deferred_no_salary,salary,salary 67853.0,salary removed (not used for deferreds)
-M0799,deferred_no_salary,salary,salary 60706.0,salary removed (not used for deferreds)
 M0880,service_vs_age,pensionable_service,service 30.6062 > age 44.1 - 18,recomputed from date joined to the valuation date (20.7447)
 M1007,active_no_exit_date,date_left/date_retired,"left nan, retired 2025-03-08",no exit in the movement report: exit date removed

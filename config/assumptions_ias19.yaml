@@ -1,14 +1,37 @@
 # assumptions_ias19 — SPEC §8.1. Best-estimate IAS 19 basis, chosen by the company and actuary.
-# Never read by funding_standard.py (SPEC §8). Starting values; mortality is re-calibrated in M5.
+# Never read by funding_standard.py (SPEC §8). Calibration evidence below; tests/test_ias19.py re-runs both calibrations.
+
+disclosures_2025:                   # Irish schemes, IAS 19 notes of 2025 annual reports (read 2026-09-27)
+  - company: Kerry Group plc (Ireland schemes)
+    source: "Annual Report 2025, note 27, pp. 264-265 (PDF pp. 266-267): https://www.kerry.com/annual-report/assets/pdfs/KGAR25_FullReport.pdf"
+    discount_rate: {2025: 0.0430, 2024: 0.0360}
+    duration_years: {2025: 13.6, 2024: 14.9}   # implied by the ±0.5% discount-rate sensitivity
+    life_expectancy_65: {male_now: 22, female_now: 24, male_in_20y: 24, female_in_20y: 26}
+  - company: Glanbia plc (ROI schemes)
+    source: "Annual Report 2025, note 8, PDF pp. 253: https://www.glanbia.com/sites/glanbia-plc/files/glanbia/investors/annual-report/2026/Glanbia-Annual-Report-2025.pdf"
+    discount_rate: {2025: 0.0415, 2024: 0.0345}
+    duration_years: {2025: 13.0, 2024: 13.0}   # not disclosed; assumed similar to the others
+    life_expectancy_65: {male_now: 22.0, female_now: 24.5, male_in_20y: 23.4, female_in_20y: 25.9}
+  - company: AIB Group plc (Irish scheme)
+    source: "Annual Financial Report 2025, PDF pp. 302-304: https://www.aib.ie/content/dam/frontdoor/investorrelations/docs/resultscentre/annualreport/2025/aib-group-plc-afr-report-2025.pdf"
+    discount_rate: {2025: 0.0421, 2024: 0.0352}
+    duration_years: {2025: 12.0, 2024: 13.0}   # disclosed weighted average duration
+    life_expectancy_65: null                    # disclosed at age 63: not comparable
+
+discount:
+  method: "ECB AAA spot curve (annual effective) + constant AA spread, per-year discounting; report the SEDR"
+  aa_spread: 0.0100
+  calibration: "spread_i = disclosed rate_i - ECB AAA annual spot at the scheme's duration; 2025-12-31 mean 102 bp (Kerry 105, Glanbia 94, AIB 106), rounded to 100 bp; 2024-12-31 mean 92 bp (check). Constant spread used at both dates (SPEC §8.1)"
+  curve_dates: {2024-12-31: 2024-12-30, 2025-12-31: 2025-12-31}   # last ECB publication on or before (SPEC §7.1)
 
 mortality:
   base_table: ILT15                 # data/market/ilt15.csv
   multiplier:                       # q(x, y) = multiplier x q_ILT15(x) x (1 - improvement)^max(y - base_year, 0)
-    M: 0.58
-    F: 0.62
-  improvement: 0.010                # a year, from base_year, cohort basis
+    M: 0.66
+    F: 0.75
+  improvement: 0.009                # a year, from base_year, cohort basis
   base_year: 2014
-  rationale: "pension-scheme members live longer than the population; starting point = Section 34 post-retirement percentages plus 1% a year improvements; calibrated in M5 to life expectancies disclosed in Irish annual reports"
+  calibration: "multiplier M and improvement solved jointly so that male e65 now = 22.0 and male e65 in 20 years = 23.7 (Kerry/Glanbia average); multiplier F so that female e65 now = 24.25; exact solution 0.661 / 0.748 / 0.88%, rounded. Check: female in 20 years 25.9 vs 25.9-26 disclosed"
 
 withdrawal:                         # probability of leaving service in a year, actives only
   rate_at_35: 0.04
@@ -18,12 +41,16 @@ withdrawal:                         # probability of leaving service in a year, 
 
 salary_growth:
   margin_over_inflation: 0.010      # salary growth = inflation + 1.0%
-  rationale: "long-term real pay growth assumption, typical of Irish IAS 19 disclosures"
+  rationale: "long-term real pay growth; Glanbia ROI 2025: salary 2.80% vs inflation 1.80% (+1.0%)"
 
 inflation:
   method: "market implied: (1 + OAT 2032 nominal yield) / (1 + OAT€i 2032 real yield) - 1 at the valuation date"
   source: data/market/mva_section34.csv
-  rationale: "7-year proxy for the euro HICP swap curve (paid data); SPEC §7.1"
+  rationale: "7-year proxy for the euro HICP swap curve (paid data); SPEC §7.1. Check: Kerry 2.00%, Glanbia 1.80%, AIB 1.70% at 2025"
+
+admin_expenses:
+  per_member_eur: 300               # a year, through P&L (SPEC §8.1)
+  rationale: "illustrative administration, actuarial and levy cost for a 1,000-member scheme"
 
 pension_increases: "min(max(CPI, 0), 3%) — from scheme_rules.yaml"
 deferred_revaluation: "min(CPI, 4%) — from scheme_rules.yaml"

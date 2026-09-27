@@ -1,0 +1,103 @@
+{
+  "valuation_date": "2025-12-31",
+  "members": {
+    "P": 442,
+    "D": 299,
+    "A": 251
+  },
+  "assumptions": {
+    "sedr": 0.04365918238245013,
+    "aa_spread": 0.01,
+    "inflation": 0.01867588932806319,
+    "salary_growth": 0.02867588932806319,
+    "pension_increases": 0.01867588932806319,
+    "deferred_revaluation": 0.01867588932806319,
+    "known_increase_2026": {
+      "2026": 0.022000000000000002
+    },
+    "mortality": {
+      "M": 0.66,
+      "F": 0.75,
+      "improvement": 0.009
+    },
+    "life_expectancy": {
+      "male_65_now": 22.078437304997287,
+      "female_65_now": 24.29305592177146,
+      "male_65_in_20_years": 23.83055655735193,
+      "female_65_in_20_years": 25.96388683822498
+    }
+  },
+  "dbo": 206799217.69741637,
+  "dbo_by_status": {
+    "A": 61900353.005551465,
+    "D": 30383586.802327428,
+    "P": 114515277.88953742
+  },
+  "pensioner_share": 0.5537510207465747,
+  "duration": 15.566473480409458,
+  "pv01": 321913.45380562544,
+  "service_cost_2026": {
+    "gross": 2707848.6546313614,
+    "member_contributions": 610955.063965415,
+    "employer": 2096893.5906659462,
+    "pensionable_payroll": 12219101.2793083,
+    "salary_roll": 18078796.679308295
+  },
+  "service_cost_pct_pensionable_payroll": 0.22160784109522066,
+  "assets": 200595241.16649386,
+  "assets_source": "placeholder: 97% of DBO until M8",
+  "net_liability": 6203976.530922502,
+  "funding_level": 0.97,
+  "asset_ceiling": "not applicable: the scheme is in deficit, so IFRIC 14 does not restrict any asset",
+  "pl_2026": {
+    "employer_service_cost": 2096893.5906659462,
+    "net_interest": 174890.0711753118,
+    "admin_expenses": 297600,
+    "total": 2569383.661841258
+  },
+  "expected_2026": {
+    "benefits": 8755127.510063346,
+    "employer_contributions": 4443820.25586166,
+    "member_contributions": 610955.063965415
+  },
+  "maturity_profile_10y": [
+    8755127.510063346,
+    8906409.137599068,
+    8966796.72766918,
+    9091269.955761971,
+    9230150.769763079,
+    9324216.778775409,
+    9505124.08641294,
+    9784058.25237805,
+    10042464.666858569,
+    10292243.907131793
+  ],
+  "sensitivities": {
+    "k_life_expectancy_plus_1": 0.9009109134624039,
+    "dbo": {
+      "discount_minus_0.5": 223948355.91645223,
+      "discount_plus_0.5": 191688149.52470523,
+      "inflation_plus_0.5": 223849355.90199828,
+      "inflation_minus_0.5": 191668619.60676864,
+      "salary_plus_0.5": 212158608.38699788,
+      "salary_minus_0.5": 201806836.56418142,
+      "life_expectancy_plus_1": 214607836.4110133
+    },
+    "change_pct": {
+      "discount_minus_0.5": 0.08292651398772732,
+      "discount_plus_0.5": -0.07307120568909153,
+      "inflation_plus_0.5": 0.08244778870261138,
+      "inflation_minus_0.5": -0.07316564472108622,
+      "salary_plus_0.5": 0.02591591375081137,
+      "salary_minus_0.5": -0.024141199317976536,
+      "life_expectancy_plus_1": 0.03775942095207685
+    }
+  },
+  "asset_allocation": {
+    "equities": 80238096.46659754,
+    "nominal_sovereigns": 60178572.34994816,
+    "inflation_linked_sovereigns": 30089286.17497408,
+    "corporates": 20059524.116649386,
+    "cash": 10029762.058324693
+  }
+}

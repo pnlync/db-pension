@@ -206,6 +206,7 @@ M0277,pension_increase,2025-01-01,P,P,27788.42,28371.98
 M0279,pension_increase,2025-01-01,P,P,15375.42,15698.3
 M0281,pension_increase,2025-01-01,P,P,22130.45,22595.19
 M0282,pension_increase,2025-01-01,P,P,13188.14,13465.09
+M0282,death,2025-07-01,P,died,,
 M0284,salary_increase,2025-01-01,A,A,54506.0,57304.0
 M0285,salary_increase,2025-01-01,A,A,67719.0,68958.0
 M0287,pension_increase,2025-01-01,P,P,32651.88,33337.57
@@ -316,6 +317,7 @@ M0430,pension_increase,2025-01-01,P,P,19059.29,19459.54
 M0431,salary_increase,2025-01-01,A,A,120000.0,123300.0
 M0432,pension_increase,2025-01-01,P,P,18233.32,18616.22
 M0433,pension_increase,2025-01-01,P,P,11036.27,11268.03
+M0435,death,2025-07-01,D,died,,
 M0436,pension_increase,2025-01-01,P,P,19993.89,20413.76
 M0437,salary_increase,2025-01-01,A,A,77988.0,81307.0
 M0438,pension_increase,2025-01-01,P,P,8407.59,8584.15
@@ -331,6 +333,7 @@ M0451,pension_increase,2025-01-01,P,P,15226.57,15546.33
 M0452,pension_increase,2025-01-01,P,P,37216.04,37997.58
 M0453,pension_increase,2025-01-01,P,P,30787.46,31434.0
 M0454,pension_increase,2025-01-01,P,P,20812.54,21249.6
+M0454,death,2025-07-01,P,died,,
 M0457,pension_increase,2025-01-01,P,P,14806.68,15117.62
 M0458,pension_increase,2025-01-01,P,P,8000.0,8168.0
 M0460,pension_increase,2025-01-01,P,P,16143.47,16482.48
@@ -366,6 +369,7 @@ M0497,pension_increase,2025-01-01,P,P,16279.71,16621.58
 M0498,pension_increase,2025-01-01,P,P,10539.34,10760.67
 M0499,salary_increase,2025-01-01,A,A,56214.0,57599.0
 M0500,pension_increase,2025-01-01,P,P,21720.63,22176.76
+M0500,death,2025-07-01,P,died,,
 M0501,pension_increase,2025-01-01,P,P,8000.0,8168.0
 M0502,pension_increase,2025-01-01,P,P,24172.36,24679.98
 M0503,pension_increase,2025-01-01,P,P,19072.1,19472.61

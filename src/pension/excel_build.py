@@ -4,6 +4,7 @@ Only inputs (blue) and the Python results on the Check sheet are typed in; every
 so the workbook is an independent re-implementation of the cash-flow engine for one member of each status.
 Run: uv run python -m pension.excel_build
 """
+import numpy as np
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill
 
@@ -40,6 +41,29 @@ def build_revaluation(wb, history):
     for year, pct in history.items():
         ws.append([int(year), float(pct)])
     return int(history.index.min())
+
+
+def build_curve(wb, discount_curve):
+    """ECB AAA annual spot at each payment time t - 0.5 (published monthly tenors), plus the AA spread;
+    beyond 30 years the last one-year forward is held flat (SPEC §7.1)."""
+    ws = wb.create_sheet("Curve")
+    ws.append(["t", "payment time", "AAA spot (annual) at payment time", "discount factor (AAA + spread)"])
+    put(ws, "F1", "AA spread"); put(ws, "G1", discount_curve.spread, BLUE)
+    put(ws, "F2", "AAA spot 29y"); put(ws, "G2", float(discount_curve.spots[discount_curve.tenors == 29][0]), BLUE)
+    put(ws, "F3", "AAA spot 30y"); put(ws, "G3", float(discount_curve.spots[discount_curve.tenors == 30][0]), BLUE)
+    put(ws, "F4", "DF 29y"); ws["G4"] = "=(1+G2+G1)^-29"
+    put(ws, "F5", "DF 30y"); ws["G5"] = "=(1+G3+G1)^-30"
+    put(ws, "F6", "forward 29-30y"); ws["G6"] = "=G4/G5-1"
+    for t in range(1, HORIZON + 1):
+        r = t + 1
+        time = t - 0.5
+        ws.cell(r, 1, t)
+        ws.cell(r, 2, time)
+        if time <= 30:
+            ws.cell(r, 3, float(discount_curve.spots[np.isclose(discount_curve.tenors, time)][0])).font = BLUE
+            ws.cell(r, 4, f"=(1+C{r}+$G$1)^-B{r}")
+        else:
+            ws.cell(r, 4, f"=$G$5*(1+$G$6)^-(B{r}-30)")
 
 
 def build_inputs(wb, basis, flat_rate):
@@ -112,6 +136,7 @@ def common_columns(ws, n, r):
     ws[f"F{r}"] = f"=(E{prev}+E{r})/2"
     ws[f"I{r}"] = f"=(1+{n['flat']})^-(A{r}-0.5)"
     ws[f"J{r}"] = f"=H{r}*I{r}"
+    ws[f"K{r}"] = f"=H{r}*INDEX(Curve!$D$2:$D${HORIZON + 1},A{r})"
 
 
 def increase(n, r):
@@ -122,7 +147,7 @@ def build_pensioner(wb, n, m):
     ws = wb.create_sheet("Pensioner")
     member_header(ws, "Pensioner: P x increases x average survival, paid mid-year", m,
                   [("pension in payment (2025)", float(m.pension), BLUE)])
-    table_header(ws, ["t", "year", "age", "q", "survival", "avg survival", "pension index", "cash flow", "DF", "PV"])
+    table_header(ws, ["t", "year", "age", "q", "survival", "avg survival", "pension index", "cash flow", "DF", "PV", "PV curve"])
     for r in range(FIRST, LAST + 1):
         common_columns(ws, n, r)
         if r == FIRST:
@@ -131,7 +156,8 @@ def build_pensioner(wb, n, m):
         ws[f"G{r}"] = f"=G{r - 1}*{increase(n, r)}"
         ws[f"H{r}"] = f"=$B$7*G{r}*F{r}"
     ws["D3"], ws["E3"] = "PV (flat rate)", f"=SUM(J{FIRST + 1}:J{LAST})"
-    return "Pensioner!E3"
+    ws["D4"], ws["E4"] = "PV (IAS 19 curve)", f"=SUM(K{FIRST + 1}:K{LAST})"
+    return "Pensioner"
 
 
 def build_deferred(wb, n, m, first_rev_year, val_year):
@@ -156,7 +182,7 @@ def build_deferred(wb, n, m, first_rev_year, val_year):
         ws[f"M{r}"] = f"=1+{pct}*$B$11/12" if k == 0 else f"=M{r - 1}*(1+{pct})"
         last = r
     ws["B12"] = f"=M{last}"
-    table_header(ws, ["t", "year", "age", "q", "survival", "avg survival", "pension index", "cash flow", "DF", "PV"])
+    table_header(ws, ["t", "year", "age", "q", "survival", "avg survival", "pension index", "cash flow", "DF", "PV", "PV curve"])
     for r in range(FIRST, LAST + 1):
         common_columns(ws, n, r)
         if r == FIRST:
@@ -165,7 +191,8 @@ def build_deferred(wb, n, m, first_rev_year, val_year):
         ws[f"G{r}"] = f"=IF(A{r}<$B$6+1,0,IF(A{r}=$B$6+1,1,G{r - 1}*{increase(n, r)}))"
         ws[f"H{r}"] = f"=$B$14*G{r}*F{r}"
     ws["D3"], ws["E3"] = "PV (flat rate)", f"=SUM(J{FIRST + 1}:J{LAST})"
-    return "Deferred!E3"
+    ws["D4"], ws["E4"] = "PV (IAS 19 curve)", f"=SUM(K{FIRST + 1}:K{LAST})"
+    return "Deferred"
 
 
 def build_active(wb, n, m):
@@ -179,7 +206,7 @@ def build_active(wb, n, m):
         ("K = sum of leaver terms + in service at 65 x R / s(T)", None, None),
     ])
     table_header(ws, ["t", "year", "age", "q", "survival", "avg survival", "pension index", "cash flow", "DF", "PV",
-                      "", "q death", "q withdraw", "in service", "leavers", "salary", "SPC", "B at exit",
+                      "PV curve", "q death", "q withdraw", "in service", "leavers", "salary", "SPC", "B at exit",
                       "B65", "leaver term"])
     for r in range(FIRST, LAST + 1):
         common_columns(ws, n, r)
@@ -201,7 +228,8 @@ def build_active(wb, n, m):
         ws[f"T{r}"] = f"=IF(A{r}<=$B$6,O{r}*(1-L{r}/2)*S{r}/E{r},0)"
     ws["B12"] = (f"=SUM(T{FIRST + 1}:T{LAST})+INDEX(N{FIRST}:N{LAST},$B$6+1)*B11/INDEX(E{FIRST}:E{LAST},$B$6+1)")
     ws["D3"], ws["E3"] = "PV (flat rate)", f"=SUM(J{FIRST + 1}:J{LAST})"
-    return "Active!E3"
+    ws["D4"], ws["E4"] = "PV (IAS 19 curve)", f"=SUM(K{FIRST + 1}:K{LAST})"
+    return "Active"
 
 
 def representative_members(members):
@@ -214,9 +242,10 @@ def representative_members(members):
     return {k: v.iloc[0] for k, v in pick.items()}
 
 
-def build(members, basis, flat_rate, path=OUT):
+def build(members, basis, flat_rate, discount_curve, path=OUT):
     wb = Workbook()
     n = build_inputs(wb, basis, flat_rate)
+    build_curve(wb, discount_curve)
     build_ilt(wb)
     first_rev_year = build_revaluation(wb, basis.revaluation_history)
     reps = representative_members(members)
@@ -226,13 +255,16 @@ def build(members, basis, flat_rate, path=OUT):
         "Active": build_active(wb, n, reps["Active"]),
     }
     ws = wb.create_sheet("Check", 1)
-    ws.append(["member", "member_id", "Python PV (flat rate)", "Excel PV (formulas)", "difference"])
-    for i, (label, cell) in enumerate(cells.items(), start=2):
+    ws.append(["member", "member_id", "Python PV (flat rate)", "Excel PV (flat rate)", "difference",
+               "Python PV (IAS 19 curve)", "Excel PV (IAS 19 curve)", "difference"])
+    for i, (label, sheet) in enumerate(cells.items(), start=2):
         m = reps[label]
         cf = cashflows.project_cashflows(members[members.member_id == m.member_id], basis)
-        python_pv = float(cashflows.pv(cf, cashflows_flat(flat_rate))[0])
-        ws.append([label, m.member_id, python_pv, f"={cell}", f"=D{i}-C{i}"])
+        flat_pv = float(cashflows.pv(cf, cashflows_flat(flat_rate))[0])
+        curve_pv = float(cashflows.pv(cf, discount_curve)[0])
+        ws.append([label, m.member_id, flat_pv, f"={sheet}!E3", f"=D{i}-C{i}", curve_pv, f"={sheet}!E4", f"=G{i}-F{i}"])
         ws[f"C{i}"].fill = YELLOW
+        ws[f"F{i}"].fill = YELLOW
     path.parent.mkdir(exist_ok=True)
     wb.save(path)
     return {"path": path, "members": {k: v.member_id for k, v in reps.items()}}
