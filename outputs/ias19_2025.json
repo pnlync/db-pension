@@ -44,16 +44,16 @@
     "salary_roll": 18078796.679308295
   },
   "service_cost_pct_pensionable_payroll": 0.22160784109522066,
-  "assets": 204731225.5204422,
-  "assets_source": "placeholder: 99% of DBO until M8",
-  "net_liability": 2067992.1769741774,
-  "funding_level": 0.9899999999999999,
+  "assets": 204731225.44239753,
+  "assets_source": "2025 roll-forward (M8), rebalanced to the strategic allocation at 2025-12-31",
+  "net_liability": 2067992.2550188303,
+  "funding_level": 0.9899999996226065,
   "asset_ceiling": "not applicable: the scheme is in deficit, so IFRIC 14 does not restrict any asset",
   "pl_2026": {
     "employer_service_cost": 2096893.5906659462,
-    "net_interest": -5683.624064678268,
+    "net_interest": -5683.620657312524,
     "admin_expenses": 297600,
-    "total": 2388809.966601268
+    "total": 2388809.970008634
   },
   "expected_2026": {
     "benefits": 8755127.510063346,
@@ -94,10 +94,10 @@
     }
   },
   "asset_allocation": {
-    "equities": 81892490.20817688,
-    "nominal_sovereigns": 61419367.65613265,
-    "inflation_linked_sovereigns": 30709683.828066327,
-    "corporates": 20473122.55204422,
-    "cash": 10236561.27602211
+    "equities": 81892490.17695902,
+    "nominal_sovereigns": 61419367.632719256,
+    "inflation_linked_sovereigns": 30709683.816359628,
+    "corporates": 20473122.544239756,
+    "cash": 10236561.272119878
   }
 }

@@ -15,33 +15,33 @@
     "annuity_fixed_increase": 0.0178,
     "insurer_spread": 0.005
   },
-  "assets": 204731225.5204422,
-  "qualifying_assets": 102365612.7602211,
+  "assets": 204731225.44239753,
+  "qualifying_assets": 102365612.72119877,
   "asset_values": {
-    "nominal_sovereigns": 61419367.65613265,
-    "inflation_linked_sovereigns": 30709683.828066327,
-    "corporates": 20473122.55204422,
-    "equities": 81892490.20817688,
-    "cash": 10236561.27602211
+    "nominal_sovereigns": 61419367.632719256,
+    "inflation_linked_sovereigns": 30709683.816359628,
+    "corporates": 20473122.544239756,
+    "equities": 81892490.17695902,
+    "cash": 10236561.272119878
   },
-  "fs_funding_level": 1.0083766672417467,
+  "fs_funding_level": 1.0083766668573482,
   "fs_met": true,
   "fsr": {
-    "proportion_part": 10066489.376711829,
-    "interest_part": 3093185.8216994107,
-    "total": 13159675.19841124,
+    "proportion_part": 10066489.38061406,
+    "interest_part": 3093185.823496476,
+    "total": 13159675.204110537,
     "d_liabilities": {
       "total": 7807355.841122538,
       "pensioners": 6464065.292920858,
       "non_pensioners": 1190205.1395522058,
       "expenses": 153085.40864946134
     },
-    "d_qualifying_assets": 4714170.019423127
+    "d_qualifying_assets": 4714170.017626062
   },
-  "fs_plus_fsr": 216190181.7257506,
-  "fs_plus_fsr_cover": 0.9469959453577557,
+  "fs_plus_fsr": 216190181.7314499,
+  "fs_plus_fsr_cover": 0.9469959449717906,
   "fs_plus_fsr_met": false,
-  "shortfall_fs_plus_fsr": 11458956.205308408,
+  "shortfall_fs_plus_fsr": 11458956.289052367,
   "mva_golden_test": {
     "months": 116,
     "mva1_matched": 116,

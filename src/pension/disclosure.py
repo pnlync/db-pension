@@ -79,6 +79,47 @@ def table_7(o):
     return table(["Item", "EUR m unless stated"], rows)
 
 
+def aoc_tables(a):
+    """Disclosure tables 2-4 from outputs/aoc_2025.json content (M8)."""
+    L, A, pl, oci = a["dbo_reconciliation"], a["asset_reconciliation"], a["pl_2025"], a["oci_2025"]
+    t2 = table(["Defined benefit obligation", "EUR m"], [
+        ["At 1 January 2025", m(L["opening"])],
+        ["Current service cost", m(L["service_cost"])],
+        ["Interest cost", m(L["interest_cost"])],
+        ["Benefits paid", m(L["benefits_paid"])],
+        ["Remeasurement: experience (membership, salaries, inflation-linked)",
+         m(L["membership"] + L["salaries"] + L["inflation_linked"])],
+        ["Remeasurement: demographic assumptions", m(L["demographic"])],
+        ["Remeasurement: financial assumptions (incl. curve roll-down)",
+         m(L["roll_down"] + L["curve"] + L["inflation_assumption"] + L["other"])],
+        ["At 31 December 2025", m(L["closing"])],
+    ])
+    t3 = table(["Plan assets", "EUR m"], [
+        ["At 1 January 2025", m(A["opening"])],
+        ["Interest income", m(A["interest_income"])],
+        ["Return on plan assets excluding interest income", m(A["return_above_interest"])],
+        ["Employer contributions", m(A["employer_contributions"])],
+        ["Member contributions", m(A["member_contributions"])],
+        ["Benefits paid", m(A["benefits_paid"])],
+        ["Administration expenses", m(A["expenses"])],
+        ["At 31 December 2025", m(A["closing"])],
+    ])
+    t4 = table(["Amounts recognised in 2025", "EUR m"], [
+        ["Current service cost (net of member contributions)", m(pl["service_cost_net"])],
+        ["Net interest on the net defined benefit liability", m(pl["net_interest"])],
+        ["Administration expenses", m(pl["admin_expenses"])],
+        ["Charge to profit or loss", m(pl["total"])],
+        ["Remeasurement: experience", m(oci["experience"])],
+        ["Remeasurement: demographic assumptions", m(oci["demographic"])],
+        ["Remeasurement: financial assumptions", m(oci["financial"])],
+        ["Return on plan assets excluding interest income", m(oci["return_on_assets_above_interest"])],
+        ["Total recognised in other comprehensive income (negative = gain)", m(oci["total"])],
+    ])
+    return ["## 2. Reconciliation of the defined benefit obligation", t2,
+            "## 3. Reconciliation of plan assets", t3,
+            "## 4. Amounts recognised in profit or loss and other comprehensive income", t4]
+
+
 def write(o, aoc=None):
     by = o["dbo_by_status"]
     parts = [

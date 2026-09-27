@@ -44,3 +44,7 @@ fs_fixed_increase_2025,"1.78% (PI 1.9%, cap 3%, ASP PEN-3 appendix)",funding_sta
 mva_used_2025,"MVA2 at NPA 1.237 (Nov 2025, OAT€i 1.03% -> 1.00%)",funding_standard,Section 34 para 4.1-4.7; data/market/mva_section34.csv,2025-11-30,2026-09-27,M6 transfer values
 bond_modelling,"one par annual-coupon bond per class: nominal sovereigns duration 10 (12y), inflation-linked real duration 10 (11y), corporates duration 6 (7y) at AAA + 1.00%",assets,SPEC 8.3; config/assets.yaml,2025-12-31,2026-09-27,"M6 FSR, M8, M9, M10"
 target_closing_funding_level,closing assets = 99% of IAS 19 DBO (design target),synthetic,SPEC 12 v1.5: meets FS but not FS + FSR at 2025 market levels (FS = 98% of DBO),2025-12-31,2026-09-27,"M5 placeholder, M8 opening-asset calibration"
+equity_return_2025,"+6.77% (MSCI World net total return in EUR, calendar 2025)",assets,"MSCI World Index (EUR) factsheet, annual performance table",2025,2026-09-27,M8 asset roll-forward
+cash_return_2025,"+2.23% (€STR compounded daily, ACT/360; average rate 2.18%)",assets,ECB Data Portal EST.B.EU000A2X2A25.WT; data/market/estr_2025.csv,2025,2026-09-27,M8 asset roll-forward
+opening_assets_2024,"EUR 205.3m, solved so that 2025-12-31 assets = 99% of the DBO",synthetic,M8 calibration (linear solve),2024-12-31,2026-09-27,M8; closing assets EUR 204.7m
+rebalancing_2025_12_31,closing assets rebalanced to the strategic allocation,assets,modelling choice (M8),2025-12-31,2026-09-27,"M6 FSR, M9, M10, M11"

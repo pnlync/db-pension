@@ -1,0 +1,124 @@
+{
+  "opening": {
+    "date": "2024-12-31",
+    "dbo": 238458680.61187628,
+    "dbo_by_status": {
+      "A": 75945373.42726448,
+      "D": 39584828.12470758,
+      "P": 122928479.05990422
+    },
+    "sedr": 0.03508598744420514,
+    "duration": 17.72129185054163,
+    "inflation": 0.019504950495049522,
+    "assets": 205287358.9350293,
+    "fs_liability": 210833600.68179622,
+    "fs_funding_level": 0.9736937483928965
+  },
+  "flows_2025": {
+    "benefits": 8718047.599630134,
+    "employer_contributions": 4411466.759780811,
+    "member_contributions": 602866.6899452027,
+    "expenses": 303000,
+    "pensionable_salary_years": 12057333.798904052
+  },
+  "dbo_reconciliation": {
+    "opening": 238458680.61187628,
+    "service_cost": 3517531.051810935,
+    "interest_cost": 8214936.107545988,
+    "benefits_paid": -8718047.599630134,
+    "roll_down": 10829.775118112564,
+    "membership": -102610.080570817,
+    "salaries": 421008.5358775258,
+    "inflation_linked": -86768.9380685091,
+    "demographic": 0.0,
+    "curve": -32229642.5275141,
+    "inflation_assumption": -2686699.2390289307,
+    "other": 0.0,
+    "closing": 206799217.69741637,
+    "expected_closing": 241473100.17160308
+  },
+  "asset_reconciliation": {
+    "opening": 205287358.9350293,
+    "interest_income": 7133025.898726747,
+    "return_above_interest": -3682445.24145439,
+    "employer_contributions": 4411466.759780811,
+    "member_contributions": 602866.6899452027,
+    "benefits_paid": -8718047.599630134,
+    "expenses": -303000,
+    "closing": 204731225.44239753
+  },
+  "asset_returns_2025": {
+    "nominal_sovereigns": -0.020531574042371936,
+    "inflation_linked_sovereigns": -0.04536809335698877,
+    "corporates": 0.017957024770277163,
+    "equities": 0.0677,
+    "cash": 0.02227383610349154
+  },
+  "assets_by_class": {
+    "opening": {
+      "nominal_sovereigns": 61586207.680508785,
+      "inflation_linked_sovereigns": 30793103.840254392,
+      "corporates": 20528735.893502932,
+      "equities": 82114943.57401173,
+      "cash": 10264367.946751466
+    },
+    "closing": {
+      "nominal_sovereigns": 60321745.89752752,
+      "inflation_linked_sovereigns": 29396079.430478282,
+      "corporates": 20897370.912445042,
+      "equities": 87674125.25397234,
+      "cash": 6441903.947974363
+    }
+  },
+  "pl_2025": {
+    "service_cost_net": 2914664.3618657324,
+    "net_interest": 1081910.2088192403,
+    "admin_expenses": 303000,
+    "total": 4299574.570684973
+  },
+  "oci_2025": {
+    "experience": 231629.5172381997,
+    "demographic": 0.0,
+    "financial": -34905511.99142492,
+    "return_on_assets_above_interest": 3682445.24145439,
+    "total": -30991437.23273233
+  },
+  "net_liability": {
+    "opening": 33171321.67684698,
+    "closing": 2067992.2550188303
+  },
+  "deficit_waterfall": {
+    "opening_deficit": 33171321.67684698,
+    "service_cost_less_contributions": -1496802.3979150788,
+    "admin_expenses": 303000,
+    "net_interest": 1081910.2088192403,
+    "asset_performance": 3682445.24145439,
+    "experience": 231629.5172381997,
+    "assumption_changes": -34905511.99142492,
+    "closing_deficit": 2067992.2550188303
+  },
+  "fs_change": {
+    "fs_opening": 210833600.68179622,
+    "fs_closing": 203030506.52733937,
+    "liabilities": {
+      "roll_forward_accrual_and_experience": 3158591.8521979153,
+      "mva_change": -595614.2651171982,
+      "annuity_cost_change": -10366071.741537571,
+      "other": 0.0
+    },
+    "assets": {
+      "contributions": 5014333.4497260135,
+      "benefits_and_expenses": -9021047.599630134,
+      "asset_return": 3450580.6572723575
+    },
+    "surplus_opening": -5546241.746766925,
+    "surplus_closing": 1700718.9150581658,
+    "fs_level_opening": 0.9736937483928965,
+    "fs_level_closing": 1.0083766668573482
+  },
+  "checks": {
+    "other_pct_of_dbo": 0.0,
+    "asset_identity": 0.0,
+    "net_liability_identity": 2.0489096641540527e-08
+  }
+}

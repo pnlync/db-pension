@@ -7,7 +7,7 @@ from datetime import date
 import numpy as np
 import pandas as pd
 
-from pension import assets, bridge, cashflows, excel_build, figures, funding_standard, ias19, mva
+from pension import aoc, assets, bridge, cashflows, excel_build, figures, funding_standard, ias19, mva
 from pension.io import MEMBERS, OUTPUTS, ROOT, load_config
 
 CLOSING = date(2025, 12, 31)
@@ -45,6 +45,44 @@ def closing_assets_placeholder(dbo):
     return load_config("assets")["target_closing_ias19_funding_level"] * dbo
 
 
+def run_aoc():
+    """M8: opening valuation, 2025 analysis of change, asset roll-forward (sets the closing assets)."""
+    m0, m1 = members_at(OPENING), members_at(CLOSING)
+    r = aoc.run(m0, m1, pd.read_csv(MEMBERS / "members_2024.csv"), pd.read_csv(MEMBERS / "movements_2025.csv"))
+    liab, roll, acc, fsc = r["liabilities"], r["assets"], r["accounts"], r["fs"]
+    r0 = liab["opening_result"]
+    out = {
+        "opening": {"date": OPENING.isoformat(), "dbo": r0["dbo"], "dbo_by_status": r0["dbo_by_status"],
+                    "sedr": r0["sedr"], "duration": r0["duration"], "inflation": r0["basis"].inflation,
+                    "assets": roll.opening, "fs_liability": fsc["fs_opening"], "fs_funding_level": fsc["fs_level_opening"]},
+        "flows_2025": r["flows"],
+        "dbo_reconciliation": liab["steps"] | {"closing": liab["closing"], "expected_closing": liab["expected_closing"]},
+        "asset_reconciliation": {"opening": roll.opening, "interest_income": acc["interest_income"],
+                                 "return_above_interest": acc["return_above_interest"],
+                                 "employer_contributions": r["flows"]["employer_contributions"],
+                                 "member_contributions": r["flows"]["member_contributions"],
+                                 "benefits_paid": -r["flows"]["benefits"], "expenses": -r["flows"]["expenses"],
+                                 "closing": roll.closing},
+        "asset_returns_2025": roll.returns, "assets_by_class": {"opening": roll.opening_by_class,
+                                                                "closing": roll.closing_by_class},
+        "pl_2025": acc["pl"], "oci_2025": acc["oci"],
+        "net_liability": {"opening": acc["opening_net_liability"], "closing": acc["closing_net_liability"]},
+        "deficit_waterfall": acc["waterfall"],
+        "fs_change": fsc,
+        "checks": {
+            "other_pct_of_dbo": liab["steps"]["other"] / liab["closing"],
+            "asset_identity": roll.closing - (roll.opening + acc["interest_income"] + acc["return_above_interest"]
+                                              + roll.net_flow),
+            "net_liability_identity": acc["closing_net_liability"] - (acc["opening_net_liability"] + acc["pl"]["total"]
+                                                                      + acc["oci"]["total"]
+                                                                      - r["flows"]["employer_contributions"]),
+        },
+    }
+    write_json("aoc_2025.json", out)
+    figures.fig3_waterfall(acc["waterfall"], OUTPUTS / "fig3_deficit_waterfall.png")
+    return out
+
+
 def run_ias19(members=None, assets=None):
     members = members_at(CLOSING) if members is None else members
     r = ias19.valuation(members, CLOSING)
@@ -76,7 +114,7 @@ def run_ias19(members=None, assets=None):
         "duration": r["duration"], "pv01": r["pv01"],
         "service_cost_2026": sc,
         "service_cost_pct_pensionable_payroll": sc["gross"] / sc["pensionable_payroll"],
-        "assets": assets, "assets_source": "placeholder: 99% of DBO until M8",
+        "assets": assets, "assets_source": "2025 roll-forward (M8), rebalanced to the strategic allocation at 2025-12-31",
         "net_liability": r["dbo"] - assets, "funding_level": assets / r["dbo"],
         "asset_ceiling": "not applicable: the scheme is in deficit, so IFRIC 14 does not restrict any asset",
         "pl_2026": {"employer_service_cost": sc["employer"], "net_interest": net_interest, "admin_expenses": admin,
@@ -174,13 +212,14 @@ def run_excel(members, ias19_result):
 
 def main():
     members = members_at(CLOSING)
-    out, r = run_ias19(members)
+    aoc_out = run_aoc()
+    out, r = run_ias19(members, assets=aoc_out["asset_reconciliation"]["closing"])
     fs_out, _ = run_funding_standard(members, out["assets"])
     br = run_bridge(members, fs_out["liabilities"]["total"], out["dbo"])
     run_excel(members, r)
     run_cv_numbers()
     from pension import disclosure
-    disclosure.write(out)
+    disclosure.write(out, disclosure.aoc_tables(aoc_out))
     print(f"IAS 19 DBO {out['dbo'] / 1e6:.1f}m, SEDR {out['assumptions']['sedr']:.2%}, duration {out['duration']:.1f}")
     print(f"FS {fs_out['liabilities']['total'] / 1e6:.1f}m, FS level {fs_out['fs_funding_level']:.1%}, "
           f"FSR {fs_out['fsr']['total'] / 1e6:.1f}m, FS + FSR cover {fs_out['fs_plus_fsr_cover']:.1%}")

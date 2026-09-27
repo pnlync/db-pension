@@ -21,3 +21,9 @@ contributions:                 # synthetic sponsor funding (input, SPEC §9 M8)
   member_rate: 0.05            # of pensionable salary (scheme rules)
   employer_normal_rate: 0.20   # of pensionable salary
   employer_deficit_eur: 2000000   # a year, 2025 actual and 2026 expected
+
+returns_2025:                  # actual 2025 market returns for the asset roll-forward (M8)
+  equities: 0.0677             # MSCI World Index (EUR), net total return, calendar 2025
+  equities_source: "MSCI World Index (EUR) factsheet, annual performance table (net returns): https://www.msci.com/www/index-factsheets/msci-world-index/08490663 (raw: data/market/raw/msci_world_eur_factsheet.pdf, retrieved 2026-09-27)"
+  cash: "€STR compounded daily over 2025 (data/market/estr_2025.csv)"
+  bonds: "revalued from the 2024-12-30 to the 2025-12-31 ECB curves, one year shorter, plus the annual coupon"

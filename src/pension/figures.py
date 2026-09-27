@@ -65,3 +65,21 @@ def fig2_bridge(steps, path, market_date="2025-12-31"):
     fig.tight_layout(rect=(0, 0.04, 1, 1))
     fig.savefig(path, dpi=150)
     plt.close(fig)
+
+
+def fig3_waterfall(w, path, market_date="2025-12-31"):
+    """Figure 3: IAS 19 deficit 2024-12-31 -> 2025-12-31 (EUR m)."""
+    fig, ax = plt.subplots(figsize=(9, 5))
+    labels = ["Deficit\n31 Dec 2024", "Service cost\nless contributions", "Admin\nexpenses", "Net interest",
+              "Assets below\ninterest income", "Member\nexperience", "Assumption changes\n(mainly discount rate)"]
+    keys = ["service_cost_less_contributions", "admin_expenses", "net_interest", "asset_performance", "experience",
+            "assumption_changes"]
+    waterfall(ax, labels, w["opening_deficit"] / 1e6, [w[k] / 1e6 for k in keys], "Deficit\n31 Dec 2025")
+    ax.axhline(0, color="#999999", lw=0.8)
+    ax.set_ylabel("EUR m (deficit = DBO - assets)")
+    ax.set_title("Figure 3. IAS 19 deficit: what moved in 2025")
+    footnote(fig, f"Synthetic members and member experience. Market data 2024-12-30 and {market_date}; "
+                  "equities MSCI World net EUR, cash €STR.")
+    fig.tight_layout(rect=(0, 0.04, 1, 1))
+    fig.savefig(path, dpi=150)
+    plt.close(fig)
