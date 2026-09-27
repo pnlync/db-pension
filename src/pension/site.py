@@ -315,7 +315,7 @@ def page(f):
 </header>
 <main id="top">
   <section class="hero" aria-labelledby="title">
-    <p class="eyebrow">Pensions actuarial project · Python, Excel</p>
+    <p class="eyebrow">Pensions actuarial project · Tom Zhang · Python, Excel</p>
     <h1 id="title">DB Pension Scheme Model</h1>
     <p class="question">What has an Irish final-salary scheme promised, what is it worth to the company and to the trustees, why did that change in 2025, and should the sponsor pay more, the trustees de-risk, or the pensioners be insured?</p>
     <p class="lede">One member-level engine values the same benefits under IAS&nbsp;19 and under the Irish Funding Standard with its reserve, rolls the scheme through 2025 on actual market data, measures risk, sizes a three-year funding proposal and prices a pensioner buy-in: two liability measures plus one transaction price.</p>
