@@ -1,0 +1,21 @@
+# Private planning notes (guides, CV and interview prep) — never publish
+private_notes/
+
+# IDE / OS / local agent tooling
+.claude/
+.idea/
+.vscode/
+.DS_Store
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Excel lock files
+~$*.xlsx

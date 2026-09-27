@@ -1,0 +1,30 @@
+[project]
+name = "pension"
+version = "0.1.0"
+description = "DB pension scheme model: IAS 19, Irish Funding Standard and FSR, 2025 analysis of change, risk, funding decisions and pensioner buy-in for a synthetic Irish scheme"
+authors = [
+    { name = "pnlync", email = "pnlync@gmail.com" }
+]
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "matplotlib>=3.11.2",
+    "numpy>=2.5.3",
+    "openpyxl>=3.1.5",
+    "pandas>=3.0.6",
+    "pyyaml>=6.0.3",
+    "scipy>=1.18.1",
+]
+
+[build-system]
+requires = ["uv_build>=0.10.3,<0.11.0"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.3.0",
+    "pycel>=1.0b30",
+    "pytest>=9.1.1",
+]

@@ -1,0 +1,18 @@
+# Scheme rules — SPEC §5. Scheme design (synthetic), not an assumption.
+name: "Synthetic Scheme IE-1"   # TODO(M0): check CRO for a name clash
+type: private-sector final-salary DB
+closed_to_new_entrants: 2012-12-31
+accrual_fraction: 60            # 1/60 of final pensionable salary per year
+max_service_years: 40
+spc_offset_multiple: 1.5        # pensionable salary = max(salary - 1.5 x SPC, 0)
+normal_retirement_age: 65
+member_contribution_rate: 0.05  # of pensionable salary
+revaluation:                    # deferreds, before retirement
+  index: CPI
+  cap: 0.04
+  floor: null                   # can be negative
+pension_increases:              # in payment, 1 January, previous year's CPI
+  index: CPI
+  cap: 0.03
+  floor: 0.0
+death_benefit: none             # v1
