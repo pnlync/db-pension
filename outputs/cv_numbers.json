@@ -1,0 +1,17 @@
+{
+  "members_opening": 1010,
+  "members_closing": 992,
+  "ias19_dbo_m": 206.8,
+  "ias19_sedr_pct": 4.37,
+  "ias19_duration_years": 15.6,
+  "fs_liability_m": 203.0,
+  "fs_minus_ias19_m": -3.8,
+  "bridge_non_pensioners_m": -18.8,
+  "bridge_pensioner_annuity_cost_m": 11.1,
+  "bridge_wind_up_m": 4.0,
+  "fsr_m": 13.2,
+  "fs_funding_level_pct": 100.8,
+  "fs_plus_fsr_shortfall_m": 11.5,
+  "mva_months_reproduced": 116,
+  "excel_members_reconciled": 3
+}

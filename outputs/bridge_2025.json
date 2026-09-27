@@ -1,0 +1,64 @@
+{
+  "steps": [
+    {
+      "step": 0,
+      "key": "ias19",
+      "change": "IAS 19 DBO",
+      "members": "all",
+      "effect": 206799217.6974163,
+      "level": 206799217.6974163
+    },
+    {
+      "step": 1,
+      "key": "leaver_basis",
+      "change": "Leaver basis: no salary growth, no withdrawal",
+      "members": "actives",
+      "effect": -10146388.571996331,
+      "level": 196652829.12541997
+    },
+    {
+      "step": 2,
+      "key": "s34_mortality",
+      "change": "Section 34 mortality and annuity loading",
+      "members": "non-pensioners",
+      "effect": 236658.6542492509,
+      "level": 196889487.77966923
+    },
+    {
+      "step": 3,
+      "key": "s34_increases",
+      "change": "Revaluation and increases at 1.5%",
+      "members": "non-pensioners",
+      "effect": -6468642.88831377,
+      "level": 190420844.89135545
+    },
+    {
+      "step": 4,
+      "key": "s34_discount",
+      "change": "6% / 4.25% discount x MVA",
+      "members": "non-pensioners",
+      "effect": -2455301.2244864404,
+      "level": 187965543.666869
+    },
+    {
+      "step": 5,
+      "key": "annuity_cost",
+      "change": "Annuity purchase cost",
+      "members": "pensioners",
+      "effect": 11083972.536404878,
+      "level": 199049516.2032739
+    },
+    {
+      "step": 6,
+      "key": "expenses",
+      "change": "Wind-up expenses",
+      "members": "all",
+      "effect": 3980990.3240654767,
+      "level": 203030506.52733937
+    }
+  ],
+  "fs_minus_ias19": -3768711.170076996,
+  "sum_of_effects": -3768711.1700769365,
+  "residual": 0.0,
+  "note": "Bridge effects are sequential rather than unique standalone decompositions."
+}

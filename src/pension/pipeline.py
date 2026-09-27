@@ -7,7 +7,7 @@ from datetime import date
 import numpy as np
 import pandas as pd
 
-from pension import assets, cashflows, excel_build, figures, funding_standard, ias19, mva
+from pension import assets, bridge, cashflows, excel_build, figures, funding_standard, ias19, mva
 from pension.io import MEMBERS, OUTPUTS, ROOT, load_config
 
 CLOSING = date(2025, 12, 31)
@@ -129,6 +129,45 @@ def run_funding_standard(members, total_assets):
     return out, r
 
 
+def run_bridge(members, fs_total, dbo):
+    steps = bridge.run(members, CLOSING)
+    out = {"steps": steps, "fs_minus_ias19": fs_total - dbo,
+           "sum_of_effects": sum(s["effect"] for s in steps[1:]),
+           "residual": steps[-1]["level"] - fs_total,
+           "note": "Bridge effects are sequential rather than unique standalone decompositions."}
+    write_json("bridge_2025.json", out)
+    figures.fig2_bridge(steps, OUTPUTS / "fig2_bridge.png")
+    return out
+
+
+def run_cv_numbers():
+    """outputs/cv_numbers.json: every number quoted in the CV, README and memo (SPEC §11, §9 M12)."""
+    def load(name):
+        path = OUTPUTS / name
+        return json.loads(path.read_text()) if path.exists() else None
+    ias, fs_, br = load("ias19_2025.json"), load("funding_standard_2025.json"), load("bridge_2025.json")
+    steps = {s["key"]: s["effect"] for s in br["steps"]}
+    non_pensioner_effect = sum(steps[k] for k in ("leaver_basis", "s34_mortality", "s34_increases", "s34_discount"))
+    cv = {
+        "members_opening": len(pd.read_csv(MEMBERS / "members_2024.csv")),
+        "members_closing": sum(ias["members"].values()),
+        "ias19_dbo_m": round(ias["dbo"] / 1e6, 1), "ias19_sedr_pct": round(ias["assumptions"]["sedr"] * 100, 2),
+        "ias19_duration_years": round(ias["duration"], 1),
+        "fs_liability_m": round(fs_["liabilities"]["total"] / 1e6, 1),
+        "fs_minus_ias19_m": round(br["fs_minus_ias19"] / 1e6, 1),
+        "bridge_non_pensioners_m": round(non_pensioner_effect / 1e6, 1),
+        "bridge_pensioner_annuity_cost_m": round(steps["annuity_cost"] / 1e6, 1),
+        "bridge_wind_up_m": round(steps["expenses"] / 1e6, 1),
+        "fsr_m": round(fs_["fsr"]["total"] / 1e6, 1),
+        "fs_funding_level_pct": round(fs_["fs_funding_level"] * 100, 1),
+        "fs_plus_fsr_shortfall_m": round(fs_["shortfall_fs_plus_fsr"] / 1e6, 1),
+        "mva_months_reproduced": fs_["mva_golden_test"]["months"],
+        "excel_members_reconciled": 3,
+    }
+    write_json("cv_numbers.json", cv)
+    return cv
+
+
 def run_excel(members, ias19_result):
     return excel_build.build(members, ias19_result["basis"], 0.0375, ias19_result["curve"])
 
@@ -137,12 +176,15 @@ def main():
     members = members_at(CLOSING)
     out, r = run_ias19(members)
     fs_out, _ = run_funding_standard(members, out["assets"])
+    br = run_bridge(members, fs_out["liabilities"]["total"], out["dbo"])
     run_excel(members, r)
+    run_cv_numbers()
     from pension import disclosure
     disclosure.write(out)
     print(f"IAS 19 DBO {out['dbo'] / 1e6:.1f}m, SEDR {out['assumptions']['sedr']:.2%}, duration {out['duration']:.1f}")
     print(f"FS {fs_out['liabilities']['total'] / 1e6:.1f}m, FS level {fs_out['fs_funding_level']:.1%}, "
           f"FSR {fs_out['fsr']['total'] / 1e6:.1f}m, FS + FSR cover {fs_out['fs_plus_fsr_cover']:.1%}")
+    print("bridge:", ", ".join(f"{s['effect'] / 1e6:+.1f}" for s in br["steps"][1:]), f"residual {br['residual']:.2f}")
 
 
 if __name__ == "__main__":
