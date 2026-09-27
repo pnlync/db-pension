@@ -1,6 +1,6 @@
 # SPEC: DB Pension Scheme Model
 
-Version 1.5 (2026-09-27). Changes from 1.4: insurer mortality 62% / 70% ILT15 with 1.2% improvements (about 90% of the calibrated IAS 19 qx, §8.2); asset design target 99% of IAS 19 DBO instead of 97% (§12), because at 2025 market levels the FS liability is 98% of the DBO; bond classes as single par bonds (§8.3). Changes from 1.3 to 1.4: M4 engine conventions (age nearest birthday, annual grid, known increases; notes/M4); M5 calibration results: AA spread 1.00%, IAS 19 mortality 66% / 75% ILT15 with 0.9% improvements, from Kerry, Glanbia and AIB 2025 annual reports (§8.1); ILT15 extended to 120 (M3). Changes from 1.2 to 1.3: active service at the opening date U(12, 35), since the scheme closed at end-2012; generator settings in `config/data_gen.yaml`; 'salary with an extra zero' is x10 (§6.2). Changes from 1.1 to 1.2: teach-back questions go into the module notes instead of being asked (§1); State Pension source, ILT15 range, wind-up wording settled in M0 (§7); deferred revaluation uses the official statutory percentages and 'CPI' means the annual average change (§4, §5, §7.1); one limitation added (§13). Changes from 1.0 to 1.1: register date columns (§8), module notes (§1, §10), buy-in accounting condition (M11, M12), ECB curve date rule (§7.1), raw downloads folder (§7.1, §10).
+Version 1.6 (2026-09-27). Change log in §14.
 
 A model of a synthetic Irish final-salary (defined benefit) pension scheme. It values the same member benefits under IAS 19 and under the Irish Funding Standard (with the funding standard reserve), explains the gap between the two, rolls the scheme forward through 2025 on actual market data, measures risk, sizes a funding proposal and prices a pensioner buy-in.
 
@@ -37,7 +37,7 @@ Framing for all reports: **two liability measures (IAS 19, Funding Standard) plu
 
 In scope: members with a single retirement pension from age 65; withdrawal and death decrements for actives; statutory revaluation for deferreds; capped CPI increases in payment; IAS 19 PUC; Funding Standard and FSR; 2025 analysis of change; deterministic sensitivities; 3-year funding proposal; one unlevered investment switch; pensioner buy-in priced from a Solvency II benchmark.
 
-Out of scope for the core (list them as limitations): spouse's and dependants' pensions, early and late retirement, commutation, death-in-service benefits, discretionary increases, swaps and leveraged LDI, Section 53B sovereign annuities, stochastic inflation for caps and floors, DC and auto-enrolment. The stochastic journey plan (M13) is optional.
+Out of scope for the core (list them as limitations): spouse's and dependants' pensions, early and late retirement, commutation, death-in-service benefits, discretionary increases, swaps and leveraged LDI, Section 53B sovereign annuities, stochastic inflation for caps and floors, DC and auto-enrolment. Future work (not in this version): a stochastic journey plan (ESG, buy-out probability), partial buy-outs of deferreds, LPI option pricing.
 
 ## 4. Dates and conventions
 
@@ -55,6 +55,8 @@ Out of scope for the core (list them as limitations): spouse's and dependants' p
 | Survival for a payment in year t | average of survival to t - 1 and t |
 
 All bases use the same timing conventions. Record the monthly-versus-annual approximation as a limitation.
+
+Engine conventions (fixed in M4, see notes/M4): age nearest birthday at the valuation date; years to 65 T = 65 - x (at least 1 for actives); year t is calendar year valuation year + t, paid at t - 0.5; salary in year t = S (1 + g)^t with S the valuation-year salary; SPC in year t = SPC(year 1) (1 + pi)^(t - 1); non-pensioners' pensions start in year T + 1 and rise from the following 1 January; actives leave or die mid-year and a leaver's first-year revaluation is 6/12; facts known at the valuation date (the next 1 January pension increase, the statutory revaluation of the valuation year, the next year's SPC) are used on every basis.
 
 ## 5. Scheme rules (`config/scheme_rules.yaml`)
 
@@ -318,8 +320,10 @@ State: "Bridge effects are sequential rather than unique standalone decompositio
 
 ### M8 Assets and 2025 analysis of change (Figure 3)
 
+- Before M8 (not a module, no commit): an end-to-end sketch on real data of the asset roll-forward, the AoC, the M10 contribution solve and the M11 buy-in, to confirm that the design setting (meets FS, not FS + FSR) and the later options still make sense. Adjust design targets once, here, if needed.
+- Market inputs to confirm with the owner before coding: 2025 EUR total return of global equities (MSCI World net EUR, found 6.77%) and the 2025 average €STR; sources recorded in the register.
 - Opening valuation at 2024-12-31 on the opening basis (IAS 19 and FS).
-- Liability AoC (IAS 19), each step a full revaluation, fixed order: opening DBO; + service cost; + interest cost (opening SEDR, mid-year timing); - actual benefits paid; = expected closing DBO; curve roll-down (revalue with the opening curve at 2025-12-31); experience: salaries, then increases and revaluation (actual 2025 CPI vs assumed), then membership movements; demographic assumption changes; financial assumption changes (curve, then inflation); = closing DBO, which must equal an independent valuation of the 2025-12-31 data on the closing basis.
+- Liability AoC (IAS 19), each step a full revaluation, fixed order: opening DBO; + service cost; + interest cost (opening SEDR x opening DBO, less half a year's interest on actual benefits); - actual benefits paid; = expected closing DBO; curve roll-down (value at 2025-12-31 of the opening projection's remaining expected cash flows, opening basis and opening curve, compared with the SEDR roll-forward using expected benefits); experience, in this order: membership movements (closing data valued with expected 2025 salaries and inflation-linked items; includes actual less expected benefits paid), salaries (actual 2025 salaries), inflation-linked items (1 January 2026 increase, 2025 statutory revaluation and 2026 SPC, actual vs assumed); demographic assumption changes (none unless the basis changed); financial assumption changes (curve, then inflation); = closing DBO, which must equal an independent valuation of the 2025-12-31 data on the closing basis. (v1.6: membership first, because salary and inflation experience can only be measured on the closing data.)
 - Asset AoC: opening + interest income (SEDR) + return above interest + employer contributions + member contributions - benefits - expenses = closing. Equities: 2025 EUR total return; bonds: revalued on the same curves as the liabilities plus coupons; cash: €STR. Employer contributions 2025 are an input (normal + fixed deficit contribution).
 - P&L = service cost + net interest + admin. OCI = experience, demographic and financial remeasurements + return on assets above interest income.
 - Deficit waterfall: opening deficit -> service cost less contributions -> net interest -> asset out/under-performance -> experience -> assumption changes -> closing deficit.
@@ -329,12 +333,12 @@ State: "Bridge effects are sequential rather than unique standalone decompositio
 - Tests: other < 0.1% of DBO; closing DBO equals independent revaluation; asset identity zero; net liability identity (closing = opening + P&L cost + OCI loss - employer contributions) zero.
 - Teach-back: the three largest drivers of the 2025 change; why service cost goes to P&L but salary experience to OCI.
 
-### M9 Risk
+### M9 Risk (slimmed in v1.6: only what M10 and the memo use)
 
-- Scenarios, each revaluing liabilities and assets on both bases and reporting liability, assets, deficit, funding level and PV01: discount +/-50 bp; inflation +/-50 bp; salary +/-50 bp; life expectancy +1 year (k); equities -20%; combined (-50 bp, +1 year, equities -20%).
+- Scenarios, each revaluing liabilities and assets on both bases and reporting liability, assets, deficit and funding level: discount +/-50 bp; inflation +/-50 bp; salary +/-50 bp; life expectancy +1 year (k); equities -20%; combined (-50 bp, +1 year, equities -20%).
 - PV01: IAS 19 liability (curve -1 bp); FS liability = dL_FS(-0.5%) / 50; assets by bond class.
-- Hedge ratio = asset PV01 / liability PV01 on each basis; funding-level change for -50 bp on each basis. Optional inflation hedge ratio.
-- Tornado chart of deficit impacts.
+- Hedge ratio = asset PV01 / liability PV01 on each basis; funding-level change for -50 bp on each basis. No inflation hedge ratio.
+- Tornado chart of IAS 19 deficit impacts.
 - Tests: duration check; k check; FS unchanged under salary scenarios; equity scenario changes no cash flow.
 - Teach-back: why is the FS hedge ratio about twice the IAS 19 one for the same portfolio?
 
@@ -352,7 +356,7 @@ State: "Bridge effects are sequential rather than unique standalone decompositio
 ### M11 Pensioner buy-in (Figure 5)
 
 - BEL (Solvency II): insurer mortality, EIOPA RFR + VA, benefit and expense cash flows; CPI-linked increases approximated by the appendix fixed rate (limitation).
-- RM: life-project engine, 2027 rules, longevity and expense shocks, life-module correlations; interest-rate risk excluded as hedgeable.
+- RM: computed in this project with the cost-of-capital method (Solvency II 2027 review parameters in assumptions_insurer.yaml): SCR for longevity (permanent 20% fall in qx) and expense (+10% level, +1% inflation), aggregated with the life-module correlation; future SCRs projected in proportion to the run-off of the BEL; interest-rate risk excluded as hedgeable. The life project's engine is the reference for the parameters, not a code dependency (v1.6). EIOPA RFR + VA at 2025-12-31 is copied from ../assurance/data/raw/.
 - Solvency II technical provisions TP = BEL + RM are the **benchmark**, not the price.
 - Premium = TP - spread passed on (difference between BEL at RFR + VA and at RFR + VA + s) + profit (m x BEL). Do not add a separate capital loading on top of RM.
 - Premium waterfall: pensioner IAS 19 DBO -> discount (AA to RFR + VA) -> insurer mortality -> expenses -> RM (= SII benchmark) -> spread passed on -> profit -> premium.
@@ -366,20 +370,11 @@ State: "Bridge effects are sequential rather than unique standalone decompositio
 - `reports/trustee_memo.md` (2-3 pages, English): purpose and headline numbers; why the two liability measures differ; what moved in 2025; options with numbers (contributions, switch, buy-in); recommendation framed as a comparison within the synthetic scenario; risks and limitations.
 - `reports/disclosure_note.md` complete.
 - README: business question, the two liability measures and the buy-in price, five figures, disclaimer, how to run. The buy-in OCI loss is always quoted "under the qualifying exact-match assumption".
-- GitHub Pages page under `docs/`.
+- GitHub Pages page under `docs/` (required): one static page generated by the pipeline from `outputs/` (no hand-typed numbers): the business questions, headline numbers (two liability measures and the buy-in price), the five figures, the trustee options table, what was validated (MVA golden test, Excel, zero-residual bridge and AoC, data checks), limitations and the disclaimer; links to the disclosure note, the memo and the repository. Works without JavaScript; figures copied to `docs/`.
 - `outputs/cv_numbers.json`: every number used in the CV, README and memo, generated by the pipeline.
-- Tests: every number in README, memo and CV found in `outputs/`; synthetic labels on every figure with member data.
+- Tests: every number in README, memo, web page and CV found in `outputs/`; synthetic labels on every figure with member data; the page's links resolve.
 
 **Gate v3**: M11-M12 tests pass; update CV to the final version.
-
-### M13 Optional: stochastic journey plan
-
-- ESG: long rate (Vasicek or AR(1)), inflation (AR(1)), equities (lognormal with risk premium), correlated; parameters from about 20 years of euro data, in the register.
-- 5,000 scenarios x 15 years, annual. Revalue liabilities once on a -300 to +300 bp shift grid and interpolate.
-- Buy-out liability: pensioners as in M11; non-pensioners as deferred annuities with an explicit loading.
-- Strategies: A current; B switch; C switch + pensioner buy-in; D current + higher contributions.
-- Metrics: probability of buy-out funding >= 100% within 10 years; median time; 1-in-20 funding level at year 10; expected PV of employer contributions. Fan chart (A vs C) and scatter (contributions vs probability).
-- Tests: zero volatility reproduces the deterministic projection; probability changes < 1 percentage point from 1,000 to 5,000 scenarios.
 
 ## 10. Repository
 
@@ -393,7 +388,7 @@ db-pension-model/
   data/        market/ (raw/ not committed), members/, assumptions_register.csv
   src/pension/ data_gen.py, data_checks.py, mortality.py, benefits.py, cashflows.py,
                ias19.py, funding_standard.py, mva.py, bridge.py, assets.py, aoc.py,
-               risk.py, decisions.py, buyin.py, journey.py (optional)
+               risk.py, decisions.py, buyin.py, pipeline.py, figures.py, disclosure.py, site.py
   tests/       one test file per module, fixtures/
   validation/  excel_checks.xlsx
   outputs/     tables, figures, data_issues.csv, cv_numbers.json
@@ -405,17 +400,18 @@ db-pension-model/
 ## 11. Output and labelling rules
 
 - Figures: 1 cash flows by status; 2 IAS 19 to FS bridge; 3 2025 deficit waterfall; 4 funding paths under the three options; 5 buy-in before and after. Each states "synthetic members" and the market-data date.
-- Every public number comes from a file in `outputs/` written by the pipeline. No hand-typed numbers in the README, memo or CV.
+- Every public number comes from a file in `outputs/` written by the pipeline. No hand-typed numbers in the README, memo, web page or CV.
+- CV bullets are written after the results, from `outputs/cv_numbers.json`, and their wording follows the results: the planning guides' bullets are templates, not claims (for example the bridge is a small net gap made of large offsetting steps, not one gap in one direction).
 - Units: EUR m to one decimal in tables; percentages to one decimal.
 
-## 12. Design targets and prototype magnitudes
+## 12. Design targets and prototype magnitudes (sanity checks only)
 
 Design targets (tune the generator and opening assets to meet them):
 
 - IAS 19 DBO about EUR 200m (180-220m); pensioners 55-60% of DBO; duration 15-18 years.
 - At 2025-12-31 the scheme meets the Funding Standard but not FS + FSR. With 2025 market data the FS liability is 98% of the IAS 19 DBO (prototype 95%), so closing assets are set at 99% of the DBO (v1.5).
 
-Prototype (illustrative flat rates, Gompertz stand-in for ILT15; sanity ranges, not targets):
+Prototype (illustrative flat rates, Gompertz stand-in for ILT15). These are sanity checks for orders of magnitude only: never tune to them and never quote them. Real-data results so far are in `outputs/` and the module notes:
 
 | Item | Prototype |
 |---|---|
@@ -432,3 +428,14 @@ If a real-data result moves the other way, explain which assumption caused it; d
 ## 13. Limitations to state
 
 Synthetic data and experience; simplified benefits (no spouses, early retirement, commutation, death benefits); AAA + spread instead of a true AA curve; OAT 2032 inflation proxy instead of the HICP swap curve; annual mid-year timing; annuity cost proxy and insurer loadings are illustrative; deterministic inflation understates the value of the 3% cap and 0% floor; funding proposal period per the Pensions Act not modelled; no derivatives, so their treatment in the FSR interest test is not tested; the FS liability for non-pensioners (transfer values) is not the cost of a guaranteed deferred-annuity buy-out.
+
+## 14. Change log
+
+All dated 2026-09-27.
+
+- 1.6 (from 1.5): scope of M8-M12 re-planned after gate v1 (end-to-end sketch before M8; AoC experience order; M9 slimmed; buy-in risk margin computed in this project; GitHub Pages page specified; M13 dropped to future work); modelling conventions written down (§4); prototype magnitudes are sanity checks only and CV wording follows the results (§11, §12).
+- 1.5 (from 1.4): insurer mortality 62% / 70% ILT15 with 1.2% improvements (about 90% of the calibrated IAS 19 qx, §8.2); asset design target 99% of IAS 19 DBO instead of 97% (§12), because at 2025 market levels the FS liability is 98% of the DBO; bond classes as single par bonds (§8.3).
+- 1.4 (from 1.3): M4 engine conventions (age nearest birthday, annual grid, known increases; notes/M4); M5 calibration results: AA spread 1.00%, IAS 19 mortality 66% / 75% ILT15 with 0.9% improvements, from Kerry, Glanbia and AIB 2025 annual reports (§8.1); ILT15 extended to 120 (M3).
+- 1.3 (from 1.2): active service at the opening date U(12, 35), since the scheme closed at end-2012; generator settings in `config/data_gen.yaml`; 'salary with an extra zero' is x10 (§6.2).
+- 1.2 (from 1.1): teach-back questions go into the module notes instead of being asked (§1); State Pension source, ILT15 range, wind-up wording settled in M0 (§7); deferred revaluation uses the official statutory percentages and 'CPI' means the annual average change (§4, §5, §7.1); one limitation added (§13).
+- 1.1 (from 1.0): register date columns (§8), module notes (§1, §10), buy-in accounting condition (M11, M12), ECB curve date rule (§7.1), raw downloads folder (§7.1, §10).
