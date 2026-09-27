@@ -6,8 +6,8 @@ M0858,duplicate_member_id,member_id,M0858,M0858
 M0626,duplicate_member_id,member_id,M0626,M0626
 M0730,birth_after_joining,date_of_birth,1987-01-15,2013-09-29
 M0334,birth_after_joining,date_of_birth,1962-03-18,1987-01-06
-M0013,service_exceeds_age_minus_18,pensionable_service,20.2491,33.3979
-M0880,service_exceeds_age_minus_18,pensionable_service,19.7454,30.6062
+M0013,service_exceeds_age_minus_18,pensionable_service,21.2485,33.3979
+M0880,service_exceeds_age_minus_18,pensionable_service,20.7447,30.6062
 M0183,pensioner_zero_pension,pension_in_payment,21855.03,0.0
 M0589,pensioner_zero_pension,pension_in_payment,14657.97,0.0
 M0798,deferred_with_salary,salary,,67853.0

@@ -183,6 +183,8 @@ def simulate_2025(opening_df, cfg, rng):
                 move(mid, "withdrawal", exit_date, "A", "D", new_value=pension)
                 m.update(status="D", date_left=exit_date, salary=np.nan,
                          pensionable_service=service, deferred_pension_at_exit=pension)
+            else:
+                m["pensionable_service"] = round(years_between(m["date_joined"], closing), 4)
 
         elif status == "D":
             if reaches_nra:

@@ -143,6 +143,12 @@ def test_statutory_revaluation_example():
     assert round(10_000 * factor) == 11_652
 
 
+def test_continuing_actives_service_to_closing_date(gen):
+    a = gen["closing_true"].query("status == 'A'")
+    service = (CLOSING - pd.to_datetime(a.date_joined)).dt.days / 365.25
+    assert np.allclose(a.pensionable_service, service.round(4))
+
+
 def test_deaths_and_withdrawals_happen(gen):
     ev = gen["movements"].event.value_counts()
     assert ev.get("death", 0) >= 3 and ev.get("withdrawal", 0) >= 1 and ev.get("retirement", 0) >= 5

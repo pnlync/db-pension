@@ -1,0 +1,5 @@
+status,opening,in,out,expected_closing,closing,difference
+A,260,0,9,251,251,0
+D,310,4,14,300,300,0
+P,440,19,14,445,445,0
+total,1010,0,14,996,996,0
