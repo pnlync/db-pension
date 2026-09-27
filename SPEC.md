@@ -1,5 +1,7 @@
 # SPEC: DB Pension Scheme Model
 
+Version 1.1 (2026-09-27). Changes from 1.0: register date columns (§8), module notes (§1, §10), buy-in accounting condition (M11, M12), ECB curve date rule (§7.1), raw downloads folder (§7.1, §10).
+
 A model of a synthetic Irish final-salary (defined benefit) pension scheme. It values the same member benefits under IAS 19 and under the Irish Funding Standard (with the funding standard reserve), explains the gap between the two, rolls the scheme forward through 2025 on actual market data, measures risk, sizes a funding proposal and prices a pensioner buy-in.
 
 This file is the contract for the coding agent. The companion guide (Chinese, "DB Pension Project Guide") explains the concepts. If this file is unclear, contradicts itself or looks wrong, stop and ask. Do not guess.
@@ -17,7 +19,8 @@ Disclaimer to carry in the README and every report:
 3. Write the module's acceptance tests first. After implementing, report each test as PASS or FAIL with the numbers.
 4. Show the key results as a small table or chart and say whether they look reasonable and why.
 5. Ask the module's teach-back questions and correct the user's answers.
-6. Commit once per module with the message `M<n>: <module name>`.
+6. Write `notes/M<n>_<name>.md` (Chinese): plain-language explanation, one-member worked example, key formulas, code map, validation results (expected vs actual), and 2-3 interview takeaways.
+7. Commit once per module with the message `M<n>: <module name>`.
 
 ## 2. Business questions
 
@@ -126,6 +129,10 @@ Keep a hidden answer key (`tests/fixtures/injected_errors.csv`) so M2 can prove 
 | Irish CPI annual changes | historical deferred revaluation; 2025 experience | CSO |
 | 2025 equity index total return in EUR; EUR short rate (€STR) for 2025 | asset roll-forward | public index provider; ECB |
 
+Original downloads go in `data/market/raw/` (downloaded manually by the owner, not committed; see its README). Transcribed, cleaned files in `data/market/` are committed.
+
+The ECB does not publish a curve on 31 December in every year (none for 2024-12-31). Use the last published business day on or before the valuation date (2024-12-30; 2025-12-31) and record it as the curve date. ECB spot rates are continuously compounded, in percent: convert to annual effective rates before use.
+
 Beyond 30 years hold the last forward rate flat. Implied inflation: `pi = (1 + y_nominal) / (1 + y_real) - 1` (about 1.95% at end-2024, 1.87% at end-2025). It is a 7-year proxy for the HICP ex-tobacco swap curve that ASP PEN-3 refers to; state this.
 
 ### 7.2 Statutory parameters (`config/statutory_ie.yaml`)
@@ -156,7 +163,7 @@ Every value below lives in this file with its source document, paragraph and eff
 | `statutory_ie.yaml` | prescribed | the law and guidance; not a choice |
 | `assumptions_insurer.yaml` | market view: FS annuity cost proxy and buy-in pricing | insurer-style assumptions, illustrative |
 
-They share only the member data and the ILT15 base table. `funding_standard.py` must not import anything from the IAS 19 assumptions, and vice versa. Every assumption also gets a row in `data/assumptions_register.csv`: name, value, basis, source, date, used in.
+They share only the member data and the ILT15 base table. `funding_standard.py` must not import anything from the IAS 19 assumptions, and vice versa. Every assumption also gets a row in `data/assumptions_register.csv`: name, value, basis, source, effective_date (when the value or rule applies), retrieval_date (when it was downloaded or read), used_in.
 
 ### 8.1 IAS 19 (`assumptions_ias19.yaml`)
 
@@ -347,15 +354,15 @@ State: "Bridge effects are sequential rather than unique standalone decompositio
 - Premium = TP - spread passed on (difference between BEL at RFR + VA and at RFR + VA + s) + profit (m x BEL). Do not add a separate capital loading on top of RM.
 - Premium waterfall: pensioner IAS 19 DBO -> discount (AA to RFR + VA) -> insurer mortality -> expenses -> RM (= SII benchmark) -> spread passed on -> profit -> premium.
 - Compare with the M6 annuity cost proxy and record the difference.
-- Day-one effects, for three ways of paying (pro rata, selling sovereigns, selling equities): IAS 19 (policy valued at the DBO of insured benefits; OCI loss = premium - insured DBO; funding level); FS (purchased annuities offset liabilities, ASP PEN-3 para 2.7; FS level, FSR, FS + FSR cover); buy-out funding level (unchanged on day one); share of liability PV01 insured.
-- Tests: OCI loss identity exact; waterfall has zero residual; FS liability after = before minus the insured liability (expenses adjusted); insured PV01 = pensioner liability PV01.
+- Day-one effects, for three ways of paying (pro rata, selling sovereigns, selling equities): IAS 19 (assuming the policy is a qualifying insurance policy that exactly matches the insured benefits, it is valued at the DBO of those benefits and OCI loss = premium - insured DBO; state this condition wherever the loss is reported; funding level); FS (purchased annuities offset liabilities, ASP PEN-3 para 2.7; FS level, FSR, FS + FSR cover); buy-out funding level (unchanged on day one); share of liability PV01 insured.
+- Tests: OCI loss identity exact (under the exact-match assumption); waterfall has zero residual; FS liability after = before minus the insured liability (expenses adjusted); insured PV01 = pensioner liability PV01.
 - Teach-back: why does the FS position improve while IAS 19 books a loss?
 
 ### M12 Packaging
 
 - `reports/trustee_memo.md` (2-3 pages, English): purpose and headline numbers; why the two liability measures differ; what moved in 2025; options with numbers (contributions, switch, buy-in); recommendation framed as a comparison within the synthetic scenario; risks and limitations.
 - `reports/disclosure_note.md` complete.
-- README: business question, the two liability measures and the buy-in price, five figures, disclaimer, how to run.
+- README: business question, the two liability measures and the buy-in price, five figures, disclaimer, how to run. The buy-in OCI loss is always quoted "under the qualifying exact-match assumption".
 - GitHub Pages page under `docs/`.
 - `outputs/cv_numbers.json`: every number used in the CV, README and memo, generated by the pipeline.
 - Tests: every number in README, memo and CV found in `outputs/`; synthetic labels on every figure with member data.
@@ -380,7 +387,7 @@ db-pension-model/
   pyproject.toml
   config/      scheme_rules.yaml, assumptions_ias19.yaml, statutory_ie.yaml,
                assumptions_insurer.yaml, assets.yaml, scenarios.yaml
-  data/        market/, members/, assumptions_register.csv
+  data/        market/ (raw/ not committed), members/, assumptions_register.csv
   src/pension/ data_gen.py, data_checks.py, mortality.py, benefits.py, cashflows.py,
                ias19.py, funding_standard.py, mva.py, bridge.py, assets.py, aoc.py,
                risk.py, decisions.py, buyin.py, journey.py (optional)
@@ -389,6 +396,7 @@ db-pension-model/
   outputs/     tables, figures, data_issues.csv, cv_numbers.json
   reports/     disclosure_note.md, trustee_memo.md
   docs/        GitHub Pages
+  notes/       per-module notes in Chinese (M<n>_*.md)
 ```
 
 ## 11. Output and labelling rules

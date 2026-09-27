@@ -20,3 +20,7 @@ DB pension scheme model (portfolio project). **SPEC.md is the build specificatio
 ## Environment
 - Python 3.12 via uv (`uv sync`, `uv run pytest`). (uv's 3.11 build is killed by macOS on this machine.)
 - GitHub: git@github.com:pnlync/db-pension.git (SPEC §10 calls the repo `db-pension-model`; the package is `pension`).
+- Raw data is downloaded manually by the owner into `data/market/raw/` (see its README) and is not committed. Do not download it yourself; give the owner the list.
+
+## Decision authority
+The owner has given the agent full discretion over the whole project (27 Sep 2026). Make the call, record it in SPEC.md (bump the version line) or the module notes, and tell the owner what was decided and why.

@@ -19,3 +19,7 @@ dist/
 
 # Excel lock files
 ~$*.xlsx
+
+# Raw third-party downloads (CSO, SAI, Pensions Authority, ECB) — fetch per data/market/raw/README.md
+data/market/raw/*
+!data/market/raw/README.md

@@ -24,4 +24,4 @@ def test_scheme_rules_match_spec_5():
 
 def test_register_header():
     header = (ROOT / "data" / "assumptions_register.csv").read_text().splitlines()[0]
-    assert header == "name,value,basis,source,date,used_in"
+    assert header == "name,value,basis,source,effective_date,retrieval_date,used_in"
