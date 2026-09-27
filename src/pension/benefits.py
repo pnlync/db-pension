@@ -40,3 +40,13 @@ def birthday(dob, age):
         return dob.replace(year=dob.year + age)
     except ValueError:
         return date(dob.year + age, 2, 28)
+
+
+def scheme_rates(cpi, rules):
+    """Deferred revaluation and pension increase implied by an assumed CPI (SPEC §5):
+    revaluation = min(CPI, 4%) (can be negative); increases = min(max(CPI, 0%), 3%)."""
+    reval = rules["revaluation"]
+    revaluation = min(cpi, reval["cap"]) if reval["floor"] is None else min(max(cpi, reval["floor"]), reval["cap"])
+    inc = rules["pension_increases"]
+    increase = min(max(cpi, inc["floor"]), inc["cap"])
+    return revaluation, increase

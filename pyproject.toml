@@ -21,6 +21,8 @@ build-backend = "uv_build"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning:pycel.*", "ignore::FutureWarning:pycel.*"]
 
 [dependency-groups]
 dev = [
