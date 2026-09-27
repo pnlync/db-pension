@@ -45,7 +45,7 @@
   },
   "service_cost_pct_pensionable_payroll": 0.22160784109522066,
   "assets": 204731225.44239753,
-  "assets_source": "2025 roll-forward (M8), rebalanced to the strategic allocation at 2025-12-31",
+  "assets_source": "rolled forward through 2025 on actual market returns and rebalanced to the strategic allocation at 31 December 2025",
   "net_liability": 2067992.2550188303,
   "funding_level": 0.9899999996226065,
   "asset_ceiling": "not applicable: the scheme is in deficit, so IFRIC 14 does not restrict any asset",

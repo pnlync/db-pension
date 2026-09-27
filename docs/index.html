@@ -7,6 +7,12 @@
   <meta name="description" content="IAS 19, the Irish Funding Standard and reserve, a 2025 analysis of change, risk, a funding proposal and a pensioner buy-in for a synthetic Irish final-salary scheme.">
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
   <link rel="stylesheet" href="./styles/site.css">
+  <style>
+    table.compact { min-width: 0; width: auto; }
+    table.compact td, table.compact th { padding-right: 28px; }
+    th.n { white-space: normal; }
+    @media (max-width: 760px) { table { font-size: 13px; } th, td { padding: 6px 6px; } }
+  </style>
 </head>
 <body>
 <header class="topbar">
@@ -39,54 +45,64 @@
     <p class="honesty"><strong>Synthetic members, real market and statutory data.</strong> All member data and member experience are synthetic. Market data are public and dated. Illustrative implementation based on published Pensions Authority and Society of Actuaries in Ireland guidance; not an actuarial certification or regulatory filing.</p>
   </section>
 
-  <section id="overview"><h2>What the model found</h2>
+  <section id="overview" aria-labelledby="h-overview"><h2 id="h-overview">What the model found</h2>
     <p class="section-q">Six results at 31 December 2025, each written by the pipeline to <code>outputs/</code>.</p>
-    <div class="findings"><div class="finding"><div class="num">€206.8m vs €203.0m</div><div class="label">Two liability measures</div><p>IAS 19 DBO and Funding Standard liability for the same 992 members. The €3.8m net gap hides −€18.8m on non-pensioners and +€11.1m annuity pricing for pensioners.</p></div><div class="finding"><div class="num">€33.2m → €2.1m</div><div class="label">IAS 19 deficit in 2025</div><p>Yields rose (3.51% → 4.37% discount rate): the curve alone took €32.2m off the DBO; the Funding Standard level rose from 97.4% to 100.8%.</p></div><div class="finding"><div class="num">32% vs 67%</div><div class="label">Same assets, two hedge ratios</div><p>Statutory transfer values barely move with rates, so the portfolio hedges twice as much Funding Standard risk as IAS 19 risk.</p></div><div class="finding"><div class="num">€4.5m a year</div><div class="label">Restoring FS + FSR in 3 years</div><p>Or €3.5m with a 20% equity-to-long-sovereign switch, which cuts the FSR shortfall by 64% but gives up about €1.3m a year of expected return.</p></div><div class="finding"><div class="num">117%</div><div class="label">Buy-in price vs IAS 19 value</div><p>Premium €134.4m (Solvency II TP 121%); IAS 19 loss €19.9m under the exact-match assumption; FSR falls to €3.6m.</p></div><div class="finding"><div class="num">116 months</div><div class="label">Statutory MVA reproduced</div><p>Every published Section 34 market value adjustment since 2017; three members reconcile to Excel to the cent; bridges and the analysis of change close with zero residual.</p></div></div>
+    <div class="findings"><div class="finding"><div class="num">€206.8m vs €203.0m</div><div class="label">Two liability measures</div><p>IAS&nbsp;19 DBO and Funding Standard liability for the same 992 members. The €3.8m net gap hides −€18.8m on non-pensioners and +€15.1m of annuity pricing and wind-up costs.</p></div><div class="finding"><div class="num">€33.2m → €2.1m</div><div class="label">IAS 19 deficit through 2025</div><p>Yields rose (discount rate 3.51% → 4.37%): the curve alone took €32.2m off the DBO, and the Funding Standard level rose from 97.4% to 100.8%.</p></div><div class="finding"><div class="num">32% vs 67%</div><div class="label">Same assets, two hedge ratios</div><p>Statutory transfer values barely move with rates, so the same portfolio hedges about twice as much Funding Standard rate risk as IAS&nbsp;19 rate risk.</p></div><div class="finding"><div class="num">€4.5m a year</div><div class="label">Restoring FS + FSR in 3 years</div><p>Or €3.5m with a 20% equity-to-long-sovereign switch, which cuts the FS + FSR shortfall by 64% but gives up about €1.3m a year of expected return.</p></div><div class="finding"><div class="num">117%</div><div class="label">Buy-in price vs IAS 19 value</div><p>Illustrative premium €134.4m (Solvency&nbsp;II TP 121%); IAS&nbsp;19 loss €19.9m under the exact-match assumption; the reserve falls to €3.6m but the price is 7% above the statutory annuity basis.</p></div><div class="finding"><div class="num">116 months</div><div class="label">Statutory MVA reproduced</div><p>Every published Section&nbsp;34 market value adjustment since 2017; three members reconcile to Excel to the cent; the bridge and the analysis of change close with zero residual.</p></div></div>
   </section>
 
-  <section id="measures"><h2>Two liability measures</h2>
+  <section id="measures" aria-labelledby="h-measures"><h2 id="h-measures">Two liability measures</h2>
     <p class="section-q">Same members, different purpose, different number.</p>
-    <p>IAS&nbsp;19 is a going-concern, best-estimate measure: projected unit credit, salaries projected to exit, AA-consistent discounting (single equivalent rate 4.37%, duration 15.6 years). The Funding Standard asks whether the scheme could meet accrued benefits on a wind-up today: actives leave now, non-pensioners are valued as Section&nbsp;34 transfer values with the market value adjustment, pensioners at annuity cost, plus wind-up expenses.</p>
-    <figure><img src="./figures/fig1_cashflows.png" alt="Figure 1. Expected benefit payments by member status (IAS 19 basis)." loading="lazy"><figcaption>Figure 1. Expected benefit payments by member status (IAS 19 basis).</figcaption></figure>
-    <figure><img src="./figures/fig2_bridge.png" alt="Figure 2. IAS 19 DBO to Funding Standard liability, six sequential full revaluations, zero residual." loading="lazy"><figcaption>Figure 2. IAS 19 DBO to Funding Standard liability, six sequential full revaluations, zero residual.</figcaption></figure>
+    <p>IAS&nbsp;19 is a going-concern, best-estimate measure: projected unit credit, salaries projected to exit, AA-consistent discounting (single equivalent rate 4.37%, duration 15.6 years). The Funding Standard asks whether the scheme could meet accrued benefits on a wind-up today: actives are treated as leaving now, non-pensioners are valued as Section&nbsp;34 transfer values with the market value adjustment, pensioners at annuity cost, plus wind-up expenses.</p>
+    <div class="table-wrap"><table class="compact"><thead><tr><th>EUR m, 31 December 2025</th><th class=n>IAS 19</th><th class=n>Funding Standard</th></tr></thead><tbody><tr><td>Actives</td><td class=n>61.9</td><td class=n>45.9</td></tr><tr><td>Deferreds</td><td class=n>30.4</td><td class=n>27.6</td></tr><tr><td>Pensioners</td><td class=n>114.5</td><td class=n>125.6</td></tr><tr><td>Wind-up expenses</td><td class=n>–</td><td class=n>4.0</td></tr><tr><td><strong>Total</strong></td><td class=n><strong>206.8</strong></td><td class=n><strong>203.0</strong></td></tr><tr><td>Assets</td><td class=n>204.7</td><td class=n>204.7</td></tr><tr><td>Funding level</td><td class=n>99.0%</td><td class=n>100.8%</td></tr><tr><td>Funding standard reserve (FSR)</td><td class=n>–</td><td class=n>13.2</td></tr><tr><td>Assets / (FS + FSR)</td><td class=n>–</td><td class=n>94.7%</td></tr></tbody></table></div>
+    <figure><a href="./figures/fig1_cashflows.png" title="Open full size"><img src="./figures/fig1_cashflows.png" alt="Stacked bars of expected benefit payments by year and member status" width="1350" height="720"></a><figcaption>Figure 1. Today's pensioners dominate the next decade; total payments peak roughly twenty to twenty-five years out, as today's actives and deferreds retire, and run off over the following decades. Current pensioners are 55% of the DBO. <a href="./figures/fig1_cashflows.png">Full size</a>.</figcaption></figure>
+    <figure><a href="./figures/fig2_bridge.png" title="Open full size"><img src="./figures/fig2_bridge.png" alt="Waterfall from the IAS 19 DBO to the Funding Standard liability" width="1500" height="840"></a><figcaption>Figure 2. The statutory basis is lower for non-pensioners (−€18.8m: today's salary, 1.5% increases, statutory discounting) and higher for pensioners at annuity cost (+€11.1m), plus wind-up costs (+€4.0m). Six sequential full revaluations, zero residual; the vertical axis does not start at zero. <a href="./figures/fig2_bridge.png">Full size</a>.</figcaption></figure>
   </section>
 
-  <section id="change"><h2>What moved in 2025</h2>
+  <section id="change" aria-labelledby="h-change"><h2 id="h-change">What moved in 2025</h2>
     <p class="section-q">Every euro of the change in the deficit has a cause.</p>
-    <p>Opening DBO €238.5m at 31 December 2024; closing €206.8m, equal to an independent revaluation. Assets were revalued on the same curves, with equities at the MSCI World net EUR return and cash at €STR. P&amp;L charge €4.3m; OCI gain €31.0m.</p>
-    <figure><img src="./figures/fig3_deficit_waterfall.png" alt="Figure 3. IAS 19 deficit, 31 December 2024 to 31 December 2025." loading="lazy"><figcaption>Figure 3. IAS 19 deficit, 31 December 2024 to 31 December 2025.</figcaption></figure>
+    <p>The DBO fell from €238.5m at 31 December 2024 to €206.8m, which equals an independent revaluation of the closing data. Assets were revalued on the same curves, with equities at the MSCI World net EUR return and cash at €STR. The 2025 charge to profit or loss was €4.3m and the gain in other comprehensive income €31.0m.</p>
+    <figure><a href="./figures/fig3_deficit_waterfall.png" title="Open full size"><img src="./figures/fig3_deficit_waterfall.png" alt="Waterfall of the IAS 19 deficit from 31 December 2024 to 31 December 2025" width="1500" height="840"></a><figcaption>Figure 3. Assumption changes removed €34.9m of the deficit, €32.2m of it from the higher discount curve; the same rise in yields made bonds fall, so assets earned €3.7m less than the IAS&nbsp;19 interest credit. Member experience was close to the assumptions. <a href="./figures/fig3_deficit_waterfall.png">Full size</a>.</figcaption></figure>
   </section>
 
-  <section id="risk"><h2>Risk</h2>
+  <section id="risk" aria-labelledby="h-risk"><h2 id="h-risk">Risk</h2>
     <p class="section-q">Which basis is the hedge ratio measured on?</p>
-    <p>Asset PV01 against liability PV01: 32% on IAS&nbsp;19, 67% on the Funding Standard. A 0.5% fall in yields costs 5.2 points of IAS&nbsp;19 funding level but only 1.2 on the statutory basis.</p>
-    <figure><img src="./figures/fig_tornado.png" alt="IAS 19 deficit sensitivity with assets revalued." loading="lazy"><figcaption>IAS 19 deficit sensitivity with assets revalued.</figcaption></figure>
+    <p>Asset PV01 against liability PV01 gives 32% on IAS&nbsp;19 and 67% on the Funding Standard. A 0.5% fall in yields costs 5.2 points of IAS&nbsp;19 funding level but only 1.2 on the statutory basis.</p>
+    <figure><a href="./figures/fig_tornado.png" title="Open full size"><img src="./figures/fig_tornado.png" alt="Tornado chart of IAS 19 deficit sensitivities" width="1350" height="660"></a><figcaption>Change in the IAS&nbsp;19 deficit when one assumption moves, with assets revalued. Inflation, equities and discount rates dominate; salary growth matters only for actives. <a href="./figures/fig_tornado.png">Full size</a>.</figcaption></figure>
   </section>
 
-  <section id="decisions"><h2>Contributions or investment?</h2>
+  <section id="decisions" aria-labelledby="h-decisions"><h2 id="h-decisions">Contributions or investment?</h2>
     <p class="section-q">What does each option solve, and at what cost?</p>
-    <p>The scheme meets the Funding Standard (100.8%) but not the Funding Standard plus the €13.2m reserve (94.7%). Projecting members, the statutory liability and the reserve year by year, deficit contributions of €4.5m a year restore it in three years; moving 20% from equities to long euro sovereigns cuts the shortfall by 64% and the contribution to €3.5m, at a cost of about €1.3m a year of expected return.</p>
-    <figure><img src="./figures/fig4_funding_paths.png" alt="Figure 4. Assets over Funding Standard plus reserve under each option." loading="lazy"><figcaption>Figure 4. Assets over Funding Standard plus reserve under each option.</figcaption></figure>
+    <p>The scheme meets the Funding Standard (100.8%) but not the Funding Standard plus the €13.2m reserve (94.7%). Members, the statutory liability and the reserve are projected year by year with yields held at end-2025 levels; the deficit contribution is solved so that assets cover the Funding Standard plus reserve at the end of year 3.</p>
+    <div class="table-wrap"><table><thead><tr><th>Option (3-year plan)</th><th class=n>Deficit contribution a year, EUR m</th><th class=n>Total over 3 years</th><th class=n>FS + FSR cover now</th><th class=n>Cover in year 3</th><th class=n>Hedge ratio IAS 19 / FS</th><th class=n>Expected return</th></tr></thead><tbody><tr><td>Contributions only</td><td class=n>4.5</td><td class=n>13.4</td><td class=n>94.7%</td><td class=n>100.0%</td><td class=n>32% / 67%</td><td class=n>4.41%</td></tr><tr><td>Switch only</td><td class=n>0.0</td><td class=n>0.0</td><td class=n>98.0%</td><td class=n>94.5%</td><td class=n>52% / 106%</td><td class=n>3.77%</td></tr><tr><td>Switch + contributions</td><td class=n>3.5</td><td class=n>10.4</td><td class=n>98.0%</td><td class=n>100.0%</td><td class=n>52% / 106%</td><td class=n>3.77%</td></tr></tbody></table></div>
+    <figure><a href="./figures/fig4_funding_paths.png" title="Open full size"><img src="./figures/fig4_funding_paths.png" alt="Line chart of FS plus FSR cover over three years under each option, and bars of contributions" width="1650" height="750"></a><figcaption>Figure 4. The switch lifts cover at once but, with lower expected returns, drifts back without contributions. Over five years the contribution falls to €3.3m a year (€3.3m with the switch); over ten years the switch costs more than it saves (€3.2m against €2.5m a year). These longer periods are planning scenarios, not proposed statutory recovery periods. <a href="./figures/fig4_funding_paths.png">Full size</a>.</figcaption></figure>
   </section>
 
-  <section id="buyin"><h2>Pensioner buy-in</h2>
+  <section id="buyin" aria-labelledby="h-buyin"><h2 id="h-buyin">Pensioner buy-in</h2>
     <p class="section-q">What does insuring the pensioners cost, and what does it do on day one?</p>
-    <p>The insurer's Solvency&nbsp;II technical provisions (EIOPA risk-free rate with volatility adjustment, annuitant mortality, expenses and a cost-of-capital risk margin of €5.0m) are the benchmark, not the price: premium = technical provisions − investment spread passed on + profit = €134.4m. Under IAS&nbsp;19 the policy is worth the insured DBO, so the company books €19.9m in OCI (qualifying exact-match policy assumed); under the Funding Standard the annuities offset the liability and the reserve falls to €3.6m. The price is 7% above the Funding Standard annuity proxy, a finding the memo acts on.</p>
-    <figure><img src="./figures/fig5_buyin.png" alt="Figure 5. Buy-in premium build-up and day-one effects." loading="lazy"><figcaption>Figure 5. Buy-in premium build-up and day-one effects.</figcaption></figure>
+    <p>The insurer's Solvency&nbsp;II technical provisions (EIOPA risk-free rate with volatility adjustment, annuitant mortality, expenses and a cost-of-capital risk margin of €5.0m) are the benchmark, not the price: premium = technical provisions − investment spread passed on + profit = €134.4m. Under IAS&nbsp;19 the policy is worth the insured DBO, so the company books €19.9m in other comprehensive income (assuming a qualifying policy that exactly matches the insured benefits). Under the Funding Standard the annuities replace the pensioner liability, which cuts the reserve; but the price is 7% above the statutory annuity basis, so the Funding Standard level falls.</p>
+    <div class="table-wrap"><table class="compact"><thead><tr><th>Day one</th><th class=n>Before</th><th class=n>After, pay pro rata</th><th class=n>After, sell equities first</th></tr></thead><tbody><tr><td>IAS 19 funding level</td><td class=n>99.0%</td><td class=n>89.4%</td><td class=n>89.4%</td></tr><tr><td>Funding Standard level</td><td class=n>100.8%</td><td class=n>93.9%</td><td class=n>93.9%</td></tr><tr><td>Funding standard reserve, EUR m</td><td class=n>13.2</td><td class=n>3.6</td><td class=n>0.1</td></tr><tr><td>Assets / (FS + FSR)</td><td class=n>94.7%</td><td class=n>89.6%</td><td class=n>93.7%</td></tr></tbody></table></div>
+    <figure><a href="./figures/fig5_buyin.png" title="Open full size"><img src="./figures/fig5_buyin.png" alt="Waterfall of the buy-in premium and bar chart of funding measures before and after" width="1950" height="900"></a><figcaption>Figure 5. From the pensioners' IAS&nbsp;19 value to the premium; and the day-one position. Paying from equities keeps the qualifying assets, so the reserve almost disappears and the shortfall is €4.7m. Axes do not start at zero. <a href="./figures/fig5_buyin.png">Full size</a>.</figcaption></figure>
   </section>
 
-  <section id="validation"><h2>Validation</h2>
+  <section id="validation" aria-labelledby="h-validation"><h2 id="h-validation">Validation</h2>
     <ul class="tight">
-      <li>All 116 published Section 34 MVA factors since January 2017 reproduced to three decimals.</li>
-      <li>Three members recomputed in live Excel formulas on three bases, agreeing to the cent.</li>
-      <li>Bridge and analysis of change close with zero residual; asset and net-liability identities hold.</li>
-      <li>Injected data errors all found; membership reconciliation differences zero.</li>
-      <li>Discount spread and mortality calibrated to three Irish 2025 annual reports.</li>
+      <li>All 116 published Section&nbsp;34 MVA factors since January 2017 reproduced to three decimals.</li>
+      <li>Three members recomputed in live Excel formulas on the IAS&nbsp;19, transfer-value and annuity bases, agreeing to the cent.</li>
+      <li>The bridge and the analysis of change close with zero residual; asset and net-liability identities hold.</li>
+      <li>Every injected data error found; membership reconciliation differences zero.</li>
+      <li>The AA spread is calibrated to three Irish 2025 annual reports and mortality to the life expectancies disclosed in two of them.</li>
+      <li>Every number on this page is generated from <code>outputs/</code>, and a test checks it.</li>
     </ul>
   </section>
 
-  <section id="limitations"><h2>Limitations</h2>
-    <p>Synthetic members and experience; simplified benefits; AAA plus spread instead of an AA curve; French 2032 bonds as the inflation proxy; annual timing; deterministic inflation; illustrative annuity cost and buy-in price; statutory recovery period not modelled.</p>
+  <section id="limitations" aria-labelledby="h-limitations"><h2 id="h-limitations">Limitations</h2>
+    <ul class="tight">
+      <li>Synthetic members and experience; no spouses' pensions, early retirement or commutation.</li>
+      <li>ECB AAA curve plus a constant spread instead of an AA corporate curve; French 2032 bonds as the inflation proxy instead of the euro inflation swap curve.</li>
+      <li>Annual timing and deterministic inflation, which understates the value of the 3% cap and 0% floor.</li>
+      <li>Illustrative annuity cost and buy-in price; the statutory annuity basis sits below the insurer price.</li>
+      <li>The statutory recovery period follows the Pensions Act and is not modelled.</li>
+    </ul>
   </section>
 </main>
 <footer>All member data and member experience are synthetic. Market data are public and dated. Illustrative implementation based on published Pensions Authority and Society of Actuaries in Ireland guidance; not an actuarial certification or regulatory filing. Generated by <code>python -m pension.pipeline</code>.</footer>

@@ -2,6 +2,7 @@
 all generated from outputs/ (no hand-typed numbers)."""
 import json
 import shutil
+import struct
 from html import escape
 
 from pension.disclosure import DISCLAIMER
@@ -19,7 +20,7 @@ def load():
 
 
 def m(x):
-    return f"{x / 1e6:,.1f}"
+    return f"{round(x / 1e6, 1) + 0.0:,.1f}"   # + 0.0 turns -0.0 into 0.0
 
 
 def pct(x, d=1):
@@ -47,6 +48,8 @@ def facts(o):
         "cover": pct(fs["fs_plus_fsr_cover"]), "shortfall": m(fs["shortfall_fs_plus_fsr"]),
         "mva_months": f"{fs['mva_golden_test']['months']}",
         "gap": m(-br["fs_minus_ias19"]), "br_np": m(-cv["bridge_non_pensioners_m"] * 1e6),
+        "br_pw": m(cv["bridge_pensioners_and_wind_up_m"] * 1e6), "br_mort": m(steps["s34_mortality"]),
+        "fs_a": m(fs["liabilities"]["actives"]), "fs_d": m(fs["liabilities"]["deferreds"]),
         "br_leaver": m(-steps["leaver_basis"]), "br_incr": m(-steps["s34_increases"]),
         "br_disc": m(-steps["s34_discount"]), "br_ann": m(steps["annuity_cost"]), "br_exp": m(steps["expenses"]),
         "dbo_open": m(aoc["opening"]["dbo"]), "sedr_open": pct(aoc["opening"]["sedr"], 2),
@@ -58,6 +61,8 @@ def facts(o):
         "hit_ias": f"{-rk['funding_level_change_minus_50bp']['ias19_pp']:.1f}",
         "hit_fs": f"{-rk['funding_level_change_minus_50bp']['fs_pp']:.1f}",
         "c3": m(dec["solved_contribution"]["3"]["contributions_only"]),
+        "c5": m(dec["solved_contribution"]["5"]["contributions_only"]),
+        "c5_sw": m(dec["solved_contribution"]["5"]["switch_and_contributions"]),
         "c3_sw": m(dec["solved_contribution"]["3"]["switch_and_contributions"]),
         "c10": m(dec["solved_contribution"]["10"]["contributions_only"]),
         "c10_sw": m(dec["solved_contribution"]["10"]["switch_and_contributions"]),
@@ -79,7 +84,16 @@ def facts(o):
         "bi_pv01_ias": pct(pro["pv01_insured_share"]["ias19"], 0), "bi_pv01_fs": pct(pro["pv01_insured_share"]["fs"], 0),
         "bi_over_proxy": pct(bi["vs_fs_annuity_proxy"]["premium_over_proxy"], 0),
         "bi_fs_quote": pct(bi["vs_fs_annuity_proxy"]["fs_level_if_quote_consistent"]),
+        "bi_ias_before": pct(pro["ias19"]["before"]["funding_level"]), "bi_fs_before": pct(pro["fs"]["before"]["fs_level"]),
+        "bi_fsr_before": m(pro["fs"]["before"]["fsr"]), "bi_cover_before": pct(pro["fs"]["before"]["cover"]),
+        "bi_fsr_eq": m(eq["fs"]["after"]["fsr"]), "bi_fs_eq": pct(eq["fs"]["after"]["fs_level"]),
+        "bi_ias_eq": pct(eq["ias19"]["after"]["funding_level"]), "bi_short_pro": m(pro["fs"]["after"]["shortfall"]),
+        "bi_fs_liab_after": m(pro["fs"]["after"]["liabilities"]),
     }
+    f["options"] = [{"option": r["option"], "c": m(r["deficit_contribution_a_year"]),
+                     "c3y": m(r["contributions_over_3_years"]), "now": pct(r["fs_plus_fsr_cover_now"]),
+                     "y3": pct(r["fs_plus_fsr_cover_year_3"]), "hr": f'{pct(r["hedge_ratio_ias19"], 0)} / {pct(r["hedge_ratio_fs"], 0)}',
+                     "ret": pct(r["expected_return"], 2)} for r in dec["trustee_table"]]
     return f
 
 
@@ -111,7 +125,7 @@ The scheme meets the Funding Standard but not the Funding Standard plus the FSR,
 
 Both measures value the same {f['members_closing']} members' benefits but answer different questions. IAS 19 is a going-concern, best-estimate measure: salaries are projected to retirement and cash flows are discounted at AA corporate bond yields (single equivalent rate {f['sedr']}). The Funding Standard asks whether the scheme could meet accrued benefits if it wound up today: active members are treated as leaving now, non-pensioners are valued as statutory transfer values (6% before 65 and 4.25% after, with the market value adjustment) and pensioners at the cost of buying annuities.
 
-The Funding Standard liability is {f['gap']} below the IAS 19 DBO, but that small net gap hides large offsetting steps: the statutory basis takes {f['br_np']} off the non-pensioners (today's salary instead of salary at exit: {f['br_leaver']}; 1.5% increases: {f['br_incr']}; statutory discounting: {f['br_disc']}), while annuity pricing adds {f['br_ann']} for pensioners and wind-up expenses add {f['br_exp']}. Meeting the Funding Standard therefore does not mean the scheme is secure on an accounting or buy-out view.
+The Funding Standard liability is {f['gap']} below the IAS 19 DBO, but that small net gap hides large offsetting steps: the statutory basis takes {f['br_np']} off the non-pensioners (today's salary instead of salary at exit: -{f['br_leaver']}; statutory mortality and annuity loading: +{f['br_mort']}; 1.5% increases: -{f['br_incr']}; statutory discounting: -{f['br_disc']}), while annuity pricing adds {f['br_ann']} for pensioners and wind-up expenses add {f['br_exp']}. Meeting the Funding Standard therefore does not mean the scheme is secure on an accounting or buy-out view.
 
 ## 3. What happened in 2025
 
@@ -130,7 +144,7 @@ The same portfolio hedges {f['hr_ias']} of the interest-rate sensitivity of the 
 | Switch and contributions | {f['c3_sw']} | {f['sw_cover_now']} | {f['both_cover_3']} | {f['sw_hr_ias']} / {f['sw_hr_fs']} |
 
 - **Contributions** close the gap without changing risk. Three years is the base case; a ten-year plan would need {f['c10']} a year (a strategic planning scenario, not a proposed statutory recovery period).
-- **The switch** cuts the FSR shortfall by {f['sw_cut']} to {f['sw_short']}, because sovereign bonds count against both parts of the reserve, and reduces the IAS 19 hit from a 0.5% fall in yields to {f['sw_hit']} points. It gives up about {f['sw_cost']} a year of expected return, so on its own the cover drifts down again, and over ten years it costs more than it saves ({f['c10_sw']} a year against {f['c10']}).
+- **The switch** cuts the shortfall against the Funding Standard plus reserve by {f['sw_cut']} to {f['sw_short']}, because sovereign bonds count against both parts of the reserve, and reduces the IAS 19 hit from a 0.5% fall in yields to {f['sw_hit']} points. It gives up about {f['sw_cost']} a year of expected return, so on its own the cover drifts down again, and over ten years it costs more than it saves ({f['c10_sw']} a year against {f['c10']}).
 - **A pensioner buy-in** at the illustrative price of {f['prem']} ({f['prem_pct']} of the pensioners' IAS 19 value; Solvency II technical provisions {f['tp_pct']}) would remove the pensioners' longevity risk and {f['bi_pv01_fs']} of the Funding Standard rate sensitivity, and cut the FSR to {f['bi_fsr_after']}. But the price is {f['bi_over_proxy']} above the annuity cost used in the Funding Standard, so the Funding Standard level would fall to {f['bi_fs_after']}; the company would book an IAS 19 loss of {f['oci_bi']} in other comprehensive income (assuming a qualifying policy that exactly matches the insured benefits) and its funding level would fall to {f['bi_ias_after']}. Paying by selling equities rather than sovereign bonds keeps the qualifying assets and leaves a shortfall of {f['bi_short_eq']}.
 
 ## 6. Recommendation (within this synthetic scenario)
@@ -139,7 +153,7 @@ Adopt the switch together with deficit contributions of {f['c3_sw']} a year, whi
 
 ## 7. Limitations
 
-Member data and experience are synthetic and the benefits are simplified (no spouses' pensions, early retirement or commutation). The IAS 19 curve is ECB AAA plus a calibrated spread; inflation is proxied by French 2032 government bonds rather than the euro inflation swap curve; timing is annual; inflation is deterministic, which understates the value of the 3% cap and 0% floor. The annuity cost, insurer loadings and buy-in price are illustrative. The statutory recovery period follows the Pensions Act and is not modelled. The Funding Standard liability for non-pensioners is not the cost of a guaranteed deferred-annuity buy-out.
+Member data and experience are synthetic and the benefits are simplified (no spouses' pensions, early retirement or commutation). The IAS 19 curve is ECB AAA plus a calibrated spread; inflation is proxied by French 2032 government bonds rather than the euro inflation swap curve; timing is annual; inflation is deterministic, which understates the value of the 3% cap and 0% floor. The annuity cost, insurer loadings and buy-in price are illustrative, and the annuity cost used for the Funding Standard is below the illustrative insurer price. Inflation-linked bonds are revalued on a real curve with flat inflation, which overstates their 2025 loss. Projected benefit payments ignore future accrual. The statutory recovery period follows the Pensions Act and is not modelled. The Funding Standard liability for non-pensioners is not the cost of a guaranteed deferred-annuity buy-out.
 """
 
 
@@ -209,25 +223,64 @@ notes/       module notes (Chinese)
 
 # --- web page ------------------------------------------------------------------------------------------------------
 
+def png_size(path):
+    """Width and height from a PNG header (used for layout-stable <img> tags)."""
+    with open(path, "rb") as fh:
+        head = fh.read(24)
+    return struct.unpack(">II", head[16:24])
+
+
 def page(f):
     e = escape
-    finding = lambda num, label, text: (f'<div class="finding"><div class="num">{e(num)}</div>'
-                                        f'<div class="label">{e(label)}</div><p>{text}</p></div>')
-    fig = lambda name, caption: (f'<figure><img src="./figures/{name}" alt="{e(caption)}" loading="lazy">'
-                                 f'<figcaption>{e(caption)}</figcaption></figure>')
+
+    def finding(num, label, text):
+        return (f'<div class="finding"><div class="num">{e(num)}</div>'
+                f'<div class="label">{e(label)}</div><p>{text}</p></div>')
+
+    def fig(name, alt, caption):
+        w, h = png_size(OUTPUTS / name)
+        return (f'<figure><a href="./figures/{name}" title="Open full size">'
+                f'<img src="./figures/{name}" alt="{e(alt)}" width="{w}" height="{h}"></a>'
+                f'<figcaption>{caption} <a href="./figures/{name}">Full size</a>.</figcaption></figure>')
+
+    def table(head, rows):
+        th = "".join(f'<th{"" if i == 0 else " class=n"}>{x}</th>' for i, x in enumerate(head))
+        body = "".join("<tr>" + "".join(f'<td{"" if i == 0 else " class=n"}>{x}</td>' for i, x in enumerate(r))
+                       + "</tr>" for r in rows)
+        compact = ' class="compact"' if len(head) <= 4 else ""
+        return f'<div class="table-wrap"><table{compact}><thead><tr>{th}</tr></thead><tbody>{body}</tbody></table></div>'
+
     findings = "".join([
         finding(f"€{f['dbo']}m vs €{f['fs']}m", "Two liability measures",
-                f"IAS 19 DBO and Funding Standard liability for the same {f['members_closing']} members. The €{f['gap']}m net gap hides −€{f['br_np']}m on non-pensioners and +€{f['br_ann']}m annuity pricing for pensioners."),
-        finding(f"€{f['def_open']}m → €{f['def_close']}m", "IAS 19 deficit in 2025",
-                f"Yields rose ({f['sedr_open']} → {f['sedr']} discount rate): the curve alone took €{f['curve']}m off the DBO; the Funding Standard level rose from {f['fs_level_open']} to {f['fs_level']}."),
+                f"IAS&nbsp;19 DBO and Funding Standard liability for the same {f['members_closing']} members. The €{f['gap']}m net gap hides −€{f['br_np']}m on non-pensioners and +€{f['br_pw']}m of annuity pricing and wind-up costs."),
+        finding(f"€{f['def_open']}m → €{f['def_close']}m", "IAS 19 deficit through 2025",
+                f"Yields rose (discount rate {f['sedr_open']} → {f['sedr']}): the curve alone took €{f['curve']}m off the DBO, and the Funding Standard level rose from {f['fs_level_open']} to {f['fs_level']}."),
         finding(f"{f['hr_ias']} vs {f['hr_fs']}", "Same assets, two hedge ratios",
-                "Statutory transfer values barely move with rates, so the portfolio hedges twice as much Funding Standard risk as IAS 19 risk."),
+                "Statutory transfer values barely move with rates, so the same portfolio hedges about twice as much Funding Standard rate risk as IAS&nbsp;19 rate risk."),
         finding(f"€{f['c3']}m a year", "Restoring FS + FSR in 3 years",
-                f"Or €{f['c3_sw']}m with a 20% equity-to-long-sovereign switch, which cuts the FSR shortfall by {f['sw_cut']} but gives up about €{f['sw_cost']}m a year of expected return."),
+                f"Or €{f['c3_sw']}m with a 20% equity-to-long-sovereign switch, which cuts the FS + FSR shortfall by {f['sw_cut']} but gives up about €{f['sw_cost']}m a year of expected return."),
         finding(f"{f['prem_pct']}", "Buy-in price vs IAS 19 value",
-                f"Premium €{f['prem']}m (Solvency II TP {f['tp_pct']}); IAS 19 loss €{f['oci_bi']}m under the exact-match assumption; FSR falls to €{f['bi_fsr_after']}m."),
+                f"Illustrative premium €{f['prem']}m (Solvency&nbsp;II TP {f['tp_pct']}); IAS&nbsp;19 loss €{f['oci_bi']}m under the exact-match assumption; the reserve falls to €{f['bi_fsr_after']}m but the price is {f['bi_over_proxy']} above the statutory annuity basis."),
         finding(f"{f['mva_months']} months", "Statutory MVA reproduced",
-                "Every published Section 34 market value adjustment since 2017; three members reconcile to Excel to the cent; bridges and the analysis of change close with zero residual."),
+                "Every published Section&nbsp;34 market value adjustment since 2017; three members reconcile to Excel to the cent; the bridge and the analysis of change close with zero residual."),
+    ])
+    measures = table(["EUR m, 31 December 2025", "IAS 19", "Funding Standard"], [
+        ["Actives", f["dbo_a"], f["fs_a"]], ["Deferreds", f["dbo_d"], f["fs_d"]],
+        ["Pensioners", f["dbo_p"], f["fs_p"]], ["Wind-up expenses", "–", f["fs_exp"]],
+        ["<strong>Total</strong>", f"<strong>{f['dbo']}</strong>", f"<strong>{f['fs']}</strong>"],
+        ["Assets", f["assets"], f["assets"]],
+        ["Funding level", f["ias_level"], f["fs_level"]],
+        ["Funding standard reserve (FSR)", "–", f["fsr"]],
+        ["Assets / (FS + FSR)", "–", f["cover"]],
+    ])
+    options = table(["Option (3-year plan)", "Deficit contribution a year, EUR m", "Total over 3 years",
+                     "FS + FSR cover now", "Cover in year 3", "Hedge ratio IAS 19 / FS", "Expected return"],
+                    [[o["option"], o["c"], o["c3y"], o["now"], o["y3"], o["hr"], o["ret"]] for o in f["options"]])
+    buyin = table(["Day one", "Before", "After, pay pro rata", "After, sell equities first"], [
+        ["IAS 19 funding level", f["bi_ias_before"], f["bi_ias_after"], f["bi_ias_eq"]],
+        ["Funding Standard level", f["bi_fs_before"], f["bi_fs_after"], f["bi_fs_eq"]],
+        ["Funding standard reserve, EUR m", f["bi_fsr_before"], f["bi_fsr_after"], f["bi_fsr_eq"]],
+        ["Assets / (FS + FSR)", f["bi_cover_before"], f["bi_cover_after"], f["bi_cover_eq"]],
     ])
     return f"""<!doctype html>
 <html lang="en">
@@ -238,6 +291,12 @@ def page(f):
   <meta name="description" content="IAS 19, the Irish Funding Standard and reserve, a 2025 analysis of change, risk, a funding proposal and a pensioner buy-in for a synthetic Irish final-salary scheme.">
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
   <link rel="stylesheet" href="./styles/site.css">
+  <style>
+    table.compact {{ min-width: 0; width: auto; }}
+    table.compact td, table.compact th {{ padding-right: 28px; }}
+    th.n {{ white-space: normal; }}
+    @media (max-width: 760px) {{ table {{ font-size: 13px; }} th, td {{ padding: 6px 6px; }} }}
+  </style>
 </head>
 <body>
 <header class="topbar">
@@ -270,54 +329,70 @@ def page(f):
     <p class="honesty"><strong>Synthetic members, real market and statutory data.</strong> {e(DISCLAIMER)}</p>
   </section>
 
-  <section id="overview"><h2>What the model found</h2>
+  <section id="overview" aria-labelledby="h-overview"><h2 id="h-overview">What the model found</h2>
     <p class="section-q">Six results at 31 December 2025, each written by the pipeline to <code>outputs/</code>.</p>
     <div class="findings">{findings}</div>
   </section>
 
-  <section id="measures"><h2>Two liability measures</h2>
+  <section id="measures" aria-labelledby="h-measures"><h2 id="h-measures">Two liability measures</h2>
     <p class="section-q">Same members, different purpose, different number.</p>
-    <p>IAS&nbsp;19 is a going-concern, best-estimate measure: projected unit credit, salaries projected to exit, AA-consistent discounting (single equivalent rate {f['sedr']}, duration {f['duration']} years). The Funding Standard asks whether the scheme could meet accrued benefits on a wind-up today: actives leave now, non-pensioners are valued as Section&nbsp;34 transfer values with the market value adjustment, pensioners at annuity cost, plus wind-up expenses.</p>
-    {fig('fig1_cashflows.png', 'Figure 1. Expected benefit payments by member status (IAS 19 basis).')}
-    {fig('fig2_bridge.png', 'Figure 2. IAS 19 DBO to Funding Standard liability, six sequential full revaluations, zero residual.')}
+    <p>IAS&nbsp;19 is a going-concern, best-estimate measure: projected unit credit, salaries projected to exit, AA-consistent discounting (single equivalent rate {f['sedr']}, duration {f['duration']} years). The Funding Standard asks whether the scheme could meet accrued benefits on a wind-up today: actives are treated as leaving now, non-pensioners are valued as Section&nbsp;34 transfer values with the market value adjustment, pensioners at annuity cost, plus wind-up expenses.</p>
+    {measures}
+    {fig('fig1_cashflows.png', 'Stacked bars of expected benefit payments by year and member status',
+         f"Figure 1. Today's pensioners dominate the next decade; total payments peak roughly twenty to twenty-five years out, as today's actives and deferreds retire, and run off over the following decades. Current pensioners are {f['pensioner_share']} of the DBO.")}
+    {fig('fig2_bridge.png', 'Waterfall from the IAS 19 DBO to the Funding Standard liability',
+         f"Figure 2. The statutory basis is lower for non-pensioners (−€{f['br_np']}m: today's salary, 1.5% increases, statutory discounting) and higher for pensioners at annuity cost (+€{f['br_ann']}m), plus wind-up costs (+€{f['br_exp']}m). Six sequential full revaluations, zero residual; the vertical axis does not start at zero.")}
   </section>
 
-  <section id="change"><h2>What moved in 2025</h2>
+  <section id="change" aria-labelledby="h-change"><h2 id="h-change">What moved in 2025</h2>
     <p class="section-q">Every euro of the change in the deficit has a cause.</p>
-    <p>Opening DBO €{f['dbo_open']}m at 31 December 2024; closing €{f['dbo']}m, equal to an independent revaluation. Assets were revalued on the same curves, with equities at the MSCI World net EUR return and cash at €STR. P&amp;L charge €{f['pl']}m; OCI gain €{f['oci']}m.</p>
-    {fig('fig3_deficit_waterfall.png', 'Figure 3. IAS 19 deficit, 31 December 2024 to 31 December 2025.')}
+    <p>The DBO fell from €{f['dbo_open']}m at 31 December 2024 to €{f['dbo']}m, which equals an independent revaluation of the closing data. Assets were revalued on the same curves, with equities at the MSCI World net EUR return and cash at €STR. The 2025 charge to profit or loss was €{f['pl']}m and the gain in other comprehensive income €{f['oci']}m.</p>
+    {fig('fig3_deficit_waterfall.png', 'Waterfall of the IAS 19 deficit from 31 December 2024 to 31 December 2025',
+         f"Figure 3. Assumption changes removed €{f['assump']}m of the deficit, €{f['curve']}m of it from the higher discount curve; the same rise in yields made bonds fall, so assets earned €{f['asset_perf']}m less than the IAS&nbsp;19 interest credit. Member experience was close to the assumptions.")}
   </section>
 
-  <section id="risk"><h2>Risk</h2>
+  <section id="risk" aria-labelledby="h-risk"><h2 id="h-risk">Risk</h2>
     <p class="section-q">Which basis is the hedge ratio measured on?</p>
-    <p>Asset PV01 against liability PV01: {f['hr_ias']} on IAS&nbsp;19, {f['hr_fs']} on the Funding Standard. A 0.5% fall in yields costs {f['hit_ias']} points of IAS&nbsp;19 funding level but only {f['hit_fs']} on the statutory basis.</p>
-    {fig('fig_tornado.png', 'IAS 19 deficit sensitivity with assets revalued.')}
+    <p>Asset PV01 against liability PV01 gives {f['hr_ias']} on IAS&nbsp;19 and {f['hr_fs']} on the Funding Standard. A 0.5% fall in yields costs {f['hit_ias']} points of IAS&nbsp;19 funding level but only {f['hit_fs']} on the statutory basis.</p>
+    {fig('fig_tornado.png', 'Tornado chart of IAS 19 deficit sensitivities',
+         "Change in the IAS&nbsp;19 deficit when one assumption moves, with assets revalued. Inflation, equities and discount rates dominate; salary growth matters only for actives.")}
   </section>
 
-  <section id="decisions"><h2>Contributions or investment?</h2>
+  <section id="decisions" aria-labelledby="h-decisions"><h2 id="h-decisions">Contributions or investment?</h2>
     <p class="section-q">What does each option solve, and at what cost?</p>
-    <p>The scheme meets the Funding Standard ({f['fs_level']}) but not the Funding Standard plus the €{f['fsr']}m reserve ({f['cover']}). Projecting members, the statutory liability and the reserve year by year, deficit contributions of €{f['c3']}m a year restore it in three years; moving 20% from equities to long euro sovereigns cuts the shortfall by {f['sw_cut']} and the contribution to €{f['c3_sw']}m, at a cost of about €{f['sw_cost']}m a year of expected return.</p>
-    {fig('fig4_funding_paths.png', 'Figure 4. Assets over Funding Standard plus reserve under each option.')}
+    <p>The scheme meets the Funding Standard ({f['fs_level']}) but not the Funding Standard plus the €{f['fsr']}m reserve ({f['cover']}). Members, the statutory liability and the reserve are projected year by year with yields held at end-2025 levels; the deficit contribution is solved so that assets cover the Funding Standard plus reserve at the end of year 3.</p>
+    {options}
+    {fig('fig4_funding_paths.png', 'Line chart of FS plus FSR cover over three years under each option, and bars of contributions',
+         f"Figure 4. The switch lifts cover at once but, with lower expected returns, drifts back without contributions. Over five years the contribution falls to €{f['c5']}m a year (€{f['c5_sw']}m with the switch); over ten years the switch costs more than it saves (€{f['c10_sw']}m against €{f['c10']}m a year). These longer periods are planning scenarios, not proposed statutory recovery periods.")}
   </section>
 
-  <section id="buyin"><h2>Pensioner buy-in</h2>
+  <section id="buyin" aria-labelledby="h-buyin"><h2 id="h-buyin">Pensioner buy-in</h2>
     <p class="section-q">What does insuring the pensioners cost, and what does it do on day one?</p>
-    <p>The insurer's Solvency&nbsp;II technical provisions (EIOPA risk-free rate with volatility adjustment, annuitant mortality, expenses and a cost-of-capital risk margin of €{f['rm']}m) are the benchmark, not the price: premium = technical provisions − investment spread passed on + profit = €{f['prem']}m. Under IAS&nbsp;19 the policy is worth the insured DBO, so the company books €{f['oci_bi']}m in OCI (qualifying exact-match policy assumed); under the Funding Standard the annuities offset the liability and the reserve falls to €{f['bi_fsr_after']}m. The price is {f['bi_over_proxy']} above the Funding Standard annuity proxy, a finding the memo acts on.</p>
-    {fig('fig5_buyin.png', 'Figure 5. Buy-in premium build-up and day-one effects.')}
+    <p>The insurer's Solvency&nbsp;II technical provisions (EIOPA risk-free rate with volatility adjustment, annuitant mortality, expenses and a cost-of-capital risk margin of €{f['rm']}m) are the benchmark, not the price: premium = technical provisions − investment spread passed on + profit = €{f['prem']}m. Under IAS&nbsp;19 the policy is worth the insured DBO, so the company books €{f['oci_bi']}m in other comprehensive income (assuming a qualifying policy that exactly matches the insured benefits). Under the Funding Standard the annuities replace the pensioner liability, which cuts the reserve; but the price is {f['bi_over_proxy']} above the statutory annuity basis, so the Funding Standard level falls.</p>
+    {buyin}
+    {fig('fig5_buyin.png', 'Waterfall of the buy-in premium and bar chart of funding measures before and after',
+         f"Figure 5. From the pensioners' IAS&nbsp;19 value to the premium; and the day-one position. Paying from equities keeps the qualifying assets, so the reserve almost disappears and the shortfall is €{f['bi_short_eq']}m. Axes do not start at zero.")}
   </section>
 
-  <section id="validation"><h2>Validation</h2>
+  <section id="validation" aria-labelledby="h-validation"><h2 id="h-validation">Validation</h2>
     <ul class="tight">
-      <li>All {f['mva_months']} published Section 34 MVA factors since January 2017 reproduced to three decimals.</li>
-      <li>Three members recomputed in live Excel formulas on three bases, agreeing to the cent.</li>
-      <li>Bridge and analysis of change close with zero residual; asset and net-liability identities hold.</li>
-      <li>Injected data errors all found; membership reconciliation differences zero.</li>
-      <li>Discount spread and mortality calibrated to three Irish 2025 annual reports.</li>
+      <li>All {f['mva_months']} published Section&nbsp;34 MVA factors since January 2017 reproduced to three decimals.</li>
+      <li>Three members recomputed in live Excel formulas on the IAS&nbsp;19, transfer-value and annuity bases, agreeing to the cent.</li>
+      <li>The bridge and the analysis of change close with zero residual; asset and net-liability identities hold.</li>
+      <li>Every injected data error found; membership reconciliation differences zero.</li>
+      <li>The AA spread is calibrated to three Irish 2025 annual reports and mortality to the life expectancies disclosed in two of them.</li>
+      <li>Every number on this page is generated from <code>outputs/</code>, and a test checks it.</li>
     </ul>
   </section>
 
-  <section id="limitations"><h2>Limitations</h2>
-    <p>Synthetic members and experience; simplified benefits; AAA plus spread instead of an AA curve; French 2032 bonds as the inflation proxy; annual timing; deterministic inflation; illustrative annuity cost and buy-in price; statutory recovery period not modelled.</p>
+  <section id="limitations" aria-labelledby="h-limitations"><h2 id="h-limitations">Limitations</h2>
+    <ul class="tight">
+      <li>Synthetic members and experience; no spouses' pensions, early retirement or commutation.</li>
+      <li>ECB AAA curve plus a constant spread instead of an AA corporate curve; French 2032 bonds as the inflation proxy instead of the euro inflation swap curve.</li>
+      <li>Annual timing and deterministic inflation, which understates the value of the 3% cap and 0% floor.</li>
+      <li>Illustrative annuity cost and buy-in price; the statutory annuity basis sits below the insurer price.</li>
+      <li>The statutory recovery period follows the Pensions Act and is not modelled.</li>
+    </ul>
   </section>
 </main>
 <footer>{e(DISCLAIMER)} Generated by <code>python -m pension.pipeline</code>.</footer>

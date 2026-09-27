@@ -9,6 +9,7 @@
   "bridge_non_pensioners_m": -18.8,
   "bridge_pensioner_annuity_cost_m": 11.1,
   "bridge_wind_up_m": 4.0,
+  "bridge_pensioners_and_wind_up_m": 15.1,
   "fsr_m": 13.2,
   "fs_funding_level_pct": 100.8,
   "fs_plus_fsr_shortfall_m": 11.5,

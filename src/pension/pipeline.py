@@ -114,7 +114,7 @@ def run_ias19(members=None, assets=None):
         "duration": r["duration"], "pv01": r["pv01"],
         "service_cost_2026": sc,
         "service_cost_pct_pensionable_payroll": sc["gross"] / sc["pensionable_payroll"],
-        "assets": assets, "assets_source": "2025 roll-forward (M8), rebalanced to the strategic allocation at 2025-12-31",
+        "assets": assets, "assets_source": "rolled forward through 2025 on actual market returns and rebalanced to the strategic allocation at 31 December 2025",
         "net_liability": r["dbo"] - assets, "funding_level": assets / r["dbo"],
         "asset_ceiling": "not applicable: the scheme is in deficit, so IFRIC 14 does not restrict any asset",
         "pl_2026": {"employer_service_cost": sc["employer"], "net_interest": net_interest, "admin_expenses": admin,
@@ -201,7 +201,7 @@ def run_decisions(members, total_assets):
     def path(al, d, c):
         return decisions.run_projection(proj, total_assets, al, d, c, 3)[:4]
 
-    paths = {"No action": path(alloc, dq, 0.0), "Contributions only": path(alloc, dq, c3),
+    paths = {"No deficit contributions": path(alloc, dq, 0.0), "Contributions only": path(alloc, dq, c3),
              "Switch only": path(alloc_sw, dq_sw, 0.0), "Switch + contributions": path(alloc_sw, dq_sw, c3_sw)}
 
     # the switch at 2025-12-31: FSR, hedge ratios, -50 bp hit, expected return
@@ -312,6 +312,7 @@ def run_cv_numbers():
         "bridge_non_pensioners_m": round(non_pensioner_effect / 1e6, 1),
         "bridge_pensioner_annuity_cost_m": round(steps["annuity_cost"] / 1e6, 1),
         "bridge_wind_up_m": round(steps["expenses"] / 1e6, 1),
+        "bridge_pensioners_and_wind_up_m": round((steps["annuity_cost"] + steps["expenses"]) / 1e6, 1),
         "fsr_m": round(fs_["fsr"]["total"] / 1e6, 1),
         "fs_funding_level_pct": round(fs_["fs_funding_level"] * 100, 1),
         "fs_plus_fsr_shortfall_m": round(fs_["shortfall_fs_plus_fsr"] / 1e6, 1),

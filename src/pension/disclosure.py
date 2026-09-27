@@ -10,7 +10,7 @@ DISCLAIMER = ("All member data and member experience are synthetic. Market data 
 
 
 def m(x):
-    return f"{x / 1e6:,.1f}"
+    return f"{round(x / 1e6, 1) + 0.0:,.1f}"   # + 0.0 turns -0.0 into 0.0
 
 
 def pct(x):

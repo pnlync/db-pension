@@ -52,6 +52,7 @@ def allowed():
 
 
 def numbers_in(text):
+    text = re.sub(r"<style>.*?</style>|<head>.*?</head>", " ", text, flags=re.S)   # CSS and metadata
     text = re.sub(r"https?://\S+|\([^)]*\.(?:png|md|csv|xlsx)\)|`[^`]*`|<code>.*?</code>", " ", text)
     text = re.sub(r"<[^>]+>", " ", text)
     return [n.strip(",.") for n in re.findall(r"(?<![A-Za-z])\d[\d,]*(?:\.\d+)?", text)]   # skip PV01, IAS19-style terms
