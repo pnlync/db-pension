@@ -1,1 +1,113 @@
-# statutory_ie — SPEC §7.2. Filled in the relevant module; every value carries its source and date.
+# statutory_ie — SPEC §7.2. Prescribed parameters for the Funding Standard and FSR.
+# Not choices: every value is transcribed from the named document. Raw copies in data/market/raw/.
+# Code must read these values from here; none may appear in code.
+
+sources:
+  s34: &s34
+    document: "Pensions Authority, Prescribed guidance in relation to Section 34 of the Pensions Act 1990, Version 02"
+    url: https://pensionsauthority.ie/wp-content/uploads/2023/06/section_34_of_the_pensions_act_1990_version_2_oct_2016_.pdf
+    raw_file: data/market/raw/section34_guidance_v02.pdf
+    effective_date: 2017-01-01
+    retrieved: 2026-09-27
+  pen3: &pen3
+    document: "Society of Actuaries in Ireland, ASP PEN-3 v4.1"
+    url: https://web.actuaries.ie/sites/default/files/asp/ASP%20PEN-3/211209%20ASP%20PEN-3%20with%20amended%20explanatory%20note%20%281%29.pdf
+    raw_file: data/market/raw/asp_pen3_v4.1.pdf
+    effective_date: 2021-10-01
+    retrieved: 2026-09-27
+  fsr_faq: &fsr_faq
+    document: "Pensions Authority, FAQs on the funding standard reserve"
+    url: https://pensionsauthority.ie/web-page/faqs-on-the-funding-standard-reserve/
+    effective_date: 2013-05-27   # prescribed percentage 10% applies from this date (Pensions Authority)
+    retrieved: 2026-09-27
+  sw19_2026: &sw19_2026
+    document: "Department of Social Protection, Rates of Payment 2026 (SW19, May 2026)"
+    url: https://assets.gov.ie/static/documents/9c18b85f/20260520_Rates_of_Payment_Booklet_-_SW19_-_2026_May.pdf
+    raw_file: data/market/raw/sw19_rates_of_payment_2026.pdf
+    effective_date: 2026-01-01
+    retrieved: 2026-09-27
+  sw19_2025: &sw19_2025
+    document: "Department of Social Protection, Rates of Payment 2025 (SW19)"
+    url: https://assets.gov.ie/316129/3bed9acc-015f-4161-8221-8eaa444f917c.pdf
+    raw_file: data/market/raw/sw19_rates_of_payment_2025.pdf
+    effective_date: 2025-01-01
+    retrieved: 2026-09-27
+
+section34:                          # standard transfer value basis (non-pensioners)
+  source: *s34
+  discount_pre_retirement: 0.06     # para 2.1 Table 1
+  discount_post_retirement: 0.0425  # para 2.1 Table 1
+  price_inflation_pre: 0.015        # para 2.1 Table 1
+  price_inflation_post: 0.015       # para 2.1 Table 1
+  capped_increase_rule:             # para 2.2 Table 2: index-linked with annual cap
+    cap_threshold: 0.015            #   cap >= 1.5% -> assume 1.5%; cap < 1.5% -> assume the cap
+    assumed_increase: 0.015
+  mortality_pre_retirement:         # para 3.2, % of ILT15, no improvements
+    M: 0.73
+    F: 0.77
+  mortality_post_retirement:        # para 3.2, % of ILT15
+    M: 0.58
+    F: 0.62
+  annuity_value_loading:            # para 3.2, compound, each year from base_year to the year NPA falls
+    base_year: 2014
+    M: 0.0036                       # males with no spouse's pension
+    F: 0.0030                       # females with no spouse's pension
+  mva:
+    date_rule: "last working day of the month immediately before the effective date"   # para 4.1
+    window_years: 10                # paras 4.3, 4.4, 4.7
+    pre_retirement_formula: "[ (1 + d_pre) / (1 + d_post + T/20 x (d_pre - d_post)) ]^T, T = whole years to NPA, max 10"  # para 4.3
+    pre_retirement_T_divisor: 20    # para 4.3
+    npa_annuity_term_years: 15      # para 4.6, annuity-certain a_15 (immediate) and v^15
+    yield_rounding: 0.0025          # para 4.6, to the nearest 0.25%
+    fixed_coupon: 0.0425            # para 4.6: 0.0425 x a15 + v^15 at i (MVA1)
+    fixed_benchmark: "France OAT 5.75% 25 October 2032"
+    index_linked_coupon_formula: "(1.0425/1.015 - 1)"   # para 4.6 (MVA2): (1 + d_post)/(1 + price_inflation_post) - 1
+    index_linked_benchmark: "France OAT€i 3.15% 25 July 2032"
+    within_window_formula: "MVA_NPA x (10 - N)/10 + N/10, N = complete years to NPA"   # para 4.7
+    overall: "pre-retirement MVA x post-retirement MVA"   # para 5.1
+    monthly_table: data/market/mva_section34.csv
+
+funding_standard:
+  source: *pen3
+  pensioners: "cost of buying annuities in the marketplace"   # para 2.4(a)
+  non_pensioners: "sum of Section 34 standard transfer values; actives treated as deferred at the effective date"  # para 2.4(b)
+  wind_up_expenses:                 # para 2.4(c): "typically the greater of 2% ... and EUR 10,000"; actuary may use a best estimate instead
+    rate: 0.02
+    minimum_eur: 10000
+  purchased_annuities: "liabilities reduced by annuities purchased, or policies valued consistently with 2.4"  # para 2.7
+  fixed_increase_table:             # Appendix: fixed rate substituted for index-linked increases, floor 0%
+    pi_rounding_decimals: 1         # "PI must be calculated to 1 decimal place"
+    interpolation: linear           # in PI and cap; intermediate >= 3 d.p., final rounded to 2 d.p.
+    pi_source_prescribed: "Eurozone HICP (ex tobacco) inflation swap curve, duration of pensioner liabilities"  # model uses OAT 2032 proxy (SPEC 7.1)
+    pi: [-0.010, 0.000, 0.010, 0.020, 0.030, 0.040]
+    index_linked:                   # by annual cap
+      0.02: [0.0020, 0.0055, 0.0100, 0.0145, 0.0180, 0.0195]
+      0.03: [0.0020, 0.0060, 0.0115, 0.0185, 0.0240, 0.0275]
+      0.04: [0.0020, 0.0060, 0.0120, 0.0200, 0.0275, 0.0340]
+      0.05: [0.0020, 0.0060, 0.0125, 0.0205, 0.0295, 0.0375]
+    parity_pay:
+      0.02: [0.0055, 0.0100, 0.0145, 0.0180, 0.0195, 0.0200]
+      0.03: [0.0060, 0.0115, 0.0185, 0.0240, 0.0275, 0.0295]
+      0.04: [0.0060, 0.0120, 0.0200, 0.0275, 0.0340, 0.0375]
+      0.05: [0.0060, 0.0125, 0.0205, 0.0295, 0.0375, 0.0435]
+
+fsr:
+  source: *fsr_faq
+  proportion: 0.10                  # FAQ Q13: 10% of 'unmatched' FS liabilities
+  interest_rate_fall: 0.005         # FAQ Q13; ASP PEN-3 para 3.2 (½%)
+  interest_test_method: "pensioner annuity cost + change in post-retirement MVA for non-pensioners; Section 34 discount rates unchanged"  # PEN-3 para 3.2, FAQ Q12
+  interest_component_can_be_negative: true   # FAQ Q13
+  qualifying_assets: [eu_sovereign_bonds, sovereign_annuities, cash_and_deposits]   # FAQ Q5, Q11
+  not_qualifying: [interest_rate_swaps, hedged_non_euro_bonds, short_bond_positions]   # FAQ Q3, Q4, Q10
+
+state_pension_contributory:         # maximum personal rate, weekly; annual = weekly x 52
+  weeks_per_year: 52
+  rates:
+    - weekly_eur: 289.30
+      effective_date: 2025-01-01
+      used_for_valuation: 2024-12-31
+      source: *sw19_2025
+    - weekly_eur: 299.30
+      effective_date: 2026-01-01
+      used_for_valuation: 2025-12-31
+      source: *sw19_2026

@@ -1,6 +1,6 @@
 # SPEC: DB Pension Scheme Model
 
-Version 1.1 (2026-09-27). Changes from 1.0: register date columns (§8), module notes (§1, §10), buy-in accounting condition (M11, M12), ECB curve date rule (§7.1), raw downloads folder (§7.1, §10).
+Version 1.2 (2026-09-27). Changes from 1.1: teach-back questions go into the module notes instead of being asked (§1); State Pension source, ILT15 range, CPI series and wind-up wording settled in M0 (§7); two limitations added (§13). Changes from 1.0 to 1.1: register date columns (§8), module notes (§1, §10), buy-in accounting condition (M11, M12), ECB curve date rule (§7.1), raw downloads folder (§7.1, §10).
 
 A model of a synthetic Irish final-salary (defined benefit) pension scheme. It values the same member benefits under IAS 19 and under the Irish Funding Standard (with the funding standard reserve), explains the gap between the two, rolls the scheme forward through 2025 on actual market data, measures risk, sizes a funding proposal and prices a pensioner buy-in.
 
@@ -18,8 +18,8 @@ Disclaimer to carry in the README and every report:
 2. Before coding a module, explain it in Chinese: the question it answers, inputs, outputs, key formulas, common mistakes. Wait for the user's OK.
 3. Write the module's acceptance tests first. After implementing, report each test as PASS or FAIL with the numbers.
 4. Show the key results as a small table or chart and say whether they look reasonable and why.
-5. Ask the module's teach-back questions and correct the user's answers.
-6. Write `notes/M<n>_<name>.md` (Chinese): plain-language explanation, one-member worked example, key formulas, code map, validation results (expected vs actual), and 2-3 interview takeaways.
+5. Put the module's teach-back questions, with model answers, in the module notes for the owner's self-study (owner's decision, 2026-09-27: do not ask them interactively).
+6. Write `notes/M<n>_<name>.md` (Chinese): plain-language explanation, one-member worked example, key formulas, code map, validation results (expected vs actual), teach-back questions with answers, and 2-3 interview takeaways.
 7. Commit once per module with the message `M<n>: <module name>`.
 
 ## 2. Business questions
@@ -124,9 +124,9 @@ Keep a hidden answer key (`tests/fixtures/injected_errors.csv`) so M2 can prove 
 | EIOPA risk-free rate with VA, 2025-12-31 | buy-in BEL | EIOPA monthly RFR (already in the life project) |
 | Section 34 MVA factors, monthly since January 2017 | FS non-pensioners; FSR; golden test | SAI MVA page |
 | French OAT 2032 nominal and OAT€i 2032 real yields | implied inflation proxy (Fisher); MVA check | SAI MVA page (end-2024: 2.97% and 1.00%; end-2025: 3.09% and 1.20%) |
-| CSO Irish Life Tables No. 15 (2005-2007), ages 0-105, M and F | base table for every basis | CSO ILT15 PDF |
+| CSO Irish Life Tables No. 15 (2005-2007), ages 0-105, M and F | base table for every basis | CSO ILT15 PDF (the only official format); the table stops at 105, the extension to 120 is set in M3 |
 | CSO Irish Life Tables No. 17 (2015-2017) | comparison only | CSO |
-| Irish CPI annual changes | historical deferred revaluation; 2025 experience | CSO |
+| Irish CPI annual changes | historical deferred revaluation; 2025 experience | CSO CPM01; use the published December 12-month change (official annual revaluation percentages for preserved benefits were not located; limitation) |
 | 2025 equity index total return in EUR; EUR short rate (€STR) for 2025 | asset roll-forward | public index provider; ECB |
 
 Original downloads go in `data/market/raw/` (downloaded manually by the owner, not committed; see its README). Transcribed, cleaned files in `data/market/` are committed.
@@ -149,11 +149,11 @@ Every value below lives in this file with its source document, paragraph and eff
 | Annuity value loading | 0.36% (M) / 0.30% (F) a year, compound, from 2014 to the year of reaching NPA | Section 34 guidance v02 |
 | MVA formulas and the date rule | see M6 | Section 34 guidance v02, para 4.1 |
 | CPI-linked increases (floor 0, cap 3%) converted to fixed | full appendix table (checks: PI 1.0% -> 1.15%, 2.0% -> 1.85%, 3.0% -> 2.40%; PI 1.9% -> 1.78% by linear interpolation) | ASP PEN-3 v4.1 appendix; transcribe the whole table |
-| Wind-up expenses | max(2% of liabilities, EUR 10,000) | ASP PEN-3 v4.1; confirm wording |
+| Wind-up expenses | max(2% of liabilities, EUR 10,000) | ASP PEN-3 v4.1 para 2.4(c): the typical allowance; the actuary may use a best estimate instead |
 | FSR proportion | 10% of FS liabilities not covered by qualifying assets | Pensions Authority; FSR Regulations |
 | FSR interest-rate stress | net effect of a 0.5% fall in interest rates | Pensions Authority FSR FAQ; ASP PEN-3 |
 | Qualifying assets | EU sovereign bonds, sovereign annuities, cash and deposits (not swaps) | Pensions Authority FSR FAQ |
-| State Pension (Contributory) | 2026: EUR 299.30 a week = EUR 15,563.60 a year (2025-12-31 valuation); 2025: EUR 289.30 a week (2024-12-31 valuation; verify) | Pensions Authority; gov.ie |
+| State Pension (Contributory) | 2026: EUR 299.30 a week = EUR 15,563.60 a year (2025-12-31 valuation); 2025: EUR 289.30 a week = EUR 15,043.60 a year (2024-12-31 valuation) | Department of Social Protection, Rates of Payment (SW19) 2025 and 2026 |
 
 ## 8. Assumption sets (three files that never read each other)
 
@@ -428,4 +428,4 @@ If a real-data result moves the other way, explain which assumption caused it; d
 
 ## 13. Limitations to state
 
-Synthetic data and experience; simplified benefits (no spouses, early retirement, commutation, death benefits); AAA + spread instead of a true AA curve; OAT 2032 inflation proxy instead of the HICP swap curve; annual mid-year timing; annuity cost proxy and insurer loadings are illustrative; deterministic inflation understates the value of the 3% cap and 0% floor; funding proposal period per the Pensions Act not modelled; no derivatives, so their treatment in the FSR interest test is not tested.
+Synthetic data and experience; simplified benefits (no spouses, early retirement, commutation, death benefits); AAA + spread instead of a true AA curve; OAT 2032 inflation proxy instead of the HICP swap curve; annual mid-year timing; annuity cost proxy and insurer loadings are illustrative; deterministic inflation understates the value of the 3% cap and 0% floor; funding proposal period per the Pensions Act not modelled; no derivatives, so their treatment in the FSR interest test is not tested; the FS liability for non-pensioners (transfer values) is not the cost of a guaranteed deferred-annuity buy-out; deferred revaluation uses CSO December CPI changes rather than the official annual revaluation orders.

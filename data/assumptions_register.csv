@@ -1,1 +1,26 @@
 name,value,basis,source,effective_date,retrieval_date,used_in
+s34_discount_pre_retirement,6.00%,funding_standard,Pensions Authority Section 34 guidance v02 para 2.1 Table 1,2017-01-01,2026-09-27,M6 transfer values
+s34_discount_post_retirement,4.25%,funding_standard,Pensions Authority Section 34 guidance v02 para 2.1 Table 1,2017-01-01,2026-09-27,M6 transfer values
+s34_price_inflation,1.50% pre and post retirement,funding_standard,Pensions Authority Section 34 guidance v02 para 2.1 Table 1,2017-01-01,2026-09-27,M6 revaluation and increases
+s34_capped_increase_rule,cap >= 1.5% -> 1.5%; cap < 1.5% -> cap,funding_standard,Pensions Authority Section 34 guidance v02 para 2.2 Table 2,2017-01-01,2026-09-27,M6 revaluation (cap 4%) and increases (cap 3%)
+s34_mortality_pre_retirement,73% M / 77% F of ILT15,funding_standard,Pensions Authority Section 34 guidance v02 para 3.2,2017-01-01,2026-09-27,M6
+s34_mortality_post_retirement,58% M / 62% F of ILT15,funding_standard,Pensions Authority Section 34 guidance v02 para 3.2,2017-01-01,2026-09-27,M6 annuity value at 65
+s34_annuity_value_loading,"0.36% M / 0.30% F a year compound, 2014 to year of NPA (no spouse's pension)",funding_standard,Pensions Authority Section 34 guidance v02 para 3.2,2017-01-01,2026-09-27,M6
+s34_mva_date_rule,MVA at last working day of month before effective date,funding_standard,Pensions Authority Section 34 guidance v02 para 4.1,2017-01-01,2026-09-27,"M6, M8"
+s34_mva_formulas,"pre: [1.06/(1.0425+T/20 x 0.0175)]^T, T<=10; NPA fixed 0.0425 a15+v15 at i; NPA index-linked (1.0425/1.015-1) a15+v15 at j; yields to nearest 0.25%; within 10 years MVA_NPA(10-N)/10+N/10",funding_standard,"Pensions Authority Section 34 guidance v02 paras 4.3-4.7, 5.1",2017-01-01,2026-09-27,"M6 golden test, FSR"
+mva_monthly_table,"MVA1, MVA2 and OAT 2032 yields, Jun 2014 - Aug 2026 (148 months)",funding_standard,"SAI MVA page, data/market/mva_section34.csv",month-end dates,2026-09-27,M6 golden test; FS 2024-12-31 (Nov 2024: 1.182/1.277) and 2025-12-31 (Nov 2025: 1.149/1.237)
+fs_pensioner_basis,cost of buying annuities in the market,funding_standard,SAI ASP PEN-3 v4.1 para 2.4(a),2021-10-01,2026-09-27,M6 pensioners
+fs_non_pensioner_basis,sum of standard transfer values; actives treated as deferred at the effective date,funding_standard,SAI ASP PEN-3 v4.1 para 2.4(b),2021-10-01,2026-09-27,M6
+fs_wind_up_expenses,"max(2% x liabilities, EUR 10,000) (typical allowance)",funding_standard,SAI ASP PEN-3 v4.1 para 2.4(c),2021-10-01,2026-09-27,"M6, M7 step 6"
+fs_purchased_annuities,liabilities reduced by annuities purchased,funding_standard,SAI ASP PEN-3 v4.1 para 2.7,2021-10-01,2026-09-27,M11 day-one FS effect
+fs_fixed_increase_table,"fixed-rate substitute for CPI-linked increases, floor 0%, caps 2-5%, PI -1% to 4%, linear interpolation; cap 3%: PI 1%->1.15%, 2%->1.85%, 3%->2.40%",funding_standard,SAI ASP PEN-3 v4.1 Appendix,2021-10-01,2026-09-27,M6 pensioner annuity cost; M11 BEL increases
+fsr_proportion,10% of FS liabilities not covered by qualifying assets,funding_standard,Pensions Authority FSR FAQ Q13; Pensions Act s44(2),2013-05-27,2026-09-27,"M6, M10"
+fsr_interest_rate_fall,0.5%; pensioner annuity cost and post-retirement MVA only; S34 discount rates unchanged; can be negative,funding_standard,SAI ASP PEN-3 v4.1 para 3.2; FSR FAQ Q12-13,2021-10-01,2026-09-27,"M6, M9, M10"
+fsr_qualifying_assets,"EU sovereign bonds, sovereign annuities, cash and deposits; not swaps",funding_standard,"Pensions Authority FSR FAQ Q3-5, Q10-11",2013-05-27,2026-09-27,"M6, M10, M11"
+state_pension_contributory_2025,"EUR 289.30 a week (EUR 15,043.60 a year)",scheme_rules,DSP Rates of Payment 2025 (SW19),2025-01-01,2026-09-27,"integration offset, 2024-12-31 valuation"
+state_pension_contributory_2026,"EUR 299.30 a week (EUR 15,563.60 a year)",scheme_rules,DSP Rates of Payment 2026 (SW19),2026-01-01,2026-09-27,"integration offset, 2025-12-31 valuation"
+base_mortality_ilt15,"CSO ILT15 qx, ages 0-105, M and F; e65 16.59 M / 19.79 F",all bases,"CSO Irish Life Tables No. 15, data/market/ilt15.csv",2005-2007,2026-09-27,"M3 base table for IAS 19, FS and insurer bases"
+comparison_mortality_ilt17,"CSO ILT17 qx, ages 0-105; e65 18.28 M / 20.97 F",comparison,"CSO Irish Life Tables No. 17, data/market/ilt17.csv",2015-2017,2026-09-27,M3 comparison only
+ecb_aaa_curve_opening,"ECB AAA spot, 3m-30y; 10y 2.45% cc",ias19; insurer; assets,"ECB YC dataset, data/market/ecb_aaa_spot_2024-12-30.csv",2024-12-30,2026-09-27,"M8 opening IAS 19 curve, bond revaluation, annuity cost proxy"
+ecb_aaa_curve_closing,"ECB AAA spot, 3m-30y; 10y 2.95% cc",ias19; insurer; assets,"ECB YC dataset, data/market/ecb_aaa_spot_2025-12-31.csv",2025-12-31,2026-09-27,"M5 IAS 19 curve, M6 annuity cost proxy, bond revaluation"
+cpi_history,"Irish CPI December index and 12-month change, 1990-2025; 2025: +2.8%",experience,"CSO CPM01, data/market/cpi_ie.csv",December values,2026-09-27,M4 deferred revaluation to valuation date; M8 2025 increase experience

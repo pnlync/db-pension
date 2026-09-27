@@ -1,5 +1,5 @@
 # Scheme rules — SPEC §5. Scheme design (synthetic), not an assumption.
-name: "Synthetic Scheme IE-1"   # TODO(M0): check CRO for a name clash
+name: "Synthetic Scheme IE-1"   # obviously fictional; schemes are trusts, not CRO companies (M0 note)
 type: private-sector final-salary DB
 closed_to_new_entrants: 2012-12-31
 accrual_fraction: 60            # 1/60 of final pensionable salary per year

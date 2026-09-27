@@ -12,5 +12,5 @@ Third-party source files, downloaded manually by the owner. Everything in this f
 | 6 | `ecb_yc_2024-12-30.csv` | ECB Data Portal API: https://data-api.ecb.europa.eu/service/data/YC/B.U2.EUR.4F.G_N_A.SV_C_YM.?startPeriod=2024-12-30&endPeriod=2024-12-30&format=csvdata | opening AAA curve (no ECB curve published on 2024-12-31) |
 | 7 | `ecb_yc_2025-12-31.csv` | same, with `startPeriod=2025-12-31&endPeriod=2025-12-31` | closing AAA curve |
 | 8 | `cso_cpm01.csv` | CSO PxStat CPM01 (monthly CPI): https://ws.cso.ie/public/api.restful/PxStat.Data.Cube_API.ReadDataset/CPM01/CSV/1.0/en | deferred revaluation, 2025 experience |
-| 9 | `spc_2026_pensions_authority.pdf` | Pensions Authority, pension calculator assumptions: https://pensionsauthority.ie/scheme-members-and-prsa-contributors/pension-calculator/assumptions/ (print to PDF) | SPC 2026: EUR 299.30/week |
-| 10 | `spc_2025_gov_ie.pdf` | gov.ie page showing the 2025 State Pension (Contributory) maximum personal rate, EUR 289.30/week (print to PDF) | SPC 2025 (opening valuation) |
+| 9 | `sw19_rates_of_payment_2026.pdf` | Department of Social Protection, Rates of Payment 2026 (SW19, May 2026): https://assets.gov.ie/static/documents/9c18b85f/20260520_Rates_of_Payment_Booklet_-_SW19_-_2026_May.pdf | SPC 2026: EUR 299.30/week (2025-12-31 valuation) |
+| 10 | `sw19_rates_of_payment_2025.pdf` | Department of Social Protection, Rates of Payment 2025 (SW19): https://assets.gov.ie/316129/3bed9acc-015f-4161-8221-8eaa444f917c.pdf | SPC 2025: EUR 289.30/week (2024-12-31 valuation) |
