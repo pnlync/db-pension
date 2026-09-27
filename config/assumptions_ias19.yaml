@@ -1,1 +1,29 @@
-# assumptions_ias19 — SPEC §8.1. Filled in the relevant module; every value carries its source and date.
+# assumptions_ias19 — SPEC §8.1. Best-estimate IAS 19 basis, chosen by the company and actuary.
+# Never read by funding_standard.py (SPEC §8). Starting values; mortality is re-calibrated in M5.
+
+mortality:
+  base_table: ILT15                 # data/market/ilt15.csv
+  multiplier:                       # q(x, y) = multiplier x q_ILT15(x) x (1 - improvement)^max(y - base_year, 0)
+    M: 0.58
+    F: 0.62
+  improvement: 0.010                # a year, from base_year, cohort basis
+  base_year: 2014
+  rationale: "pension-scheme members live longer than the population; starting point = Section 34 post-retirement percentages plus 1% a year improvements; calibrated in M5 to life expectancies disclosed in Irish annual reports"
+
+withdrawal:                         # probability of leaving service in a year, actives only
+  rate_at_35: 0.04
+  slope_per_year: 0.002             # rate = max(0, 0.04 - 0.002 x (age - 35))
+  zero_from_age: 55
+  rationale: "illustrative age-related table for a closed scheme with long-serving members; synthetic experience is drawn from it (SPEC §6.2)"
+
+salary_growth:
+  margin_over_inflation: 0.010      # salary growth = inflation + 1.0%
+  rationale: "long-term real pay growth assumption, typical of Irish IAS 19 disclosures"
+
+inflation:
+  method: "market implied: (1 + OAT 2032 nominal yield) / (1 + OAT€i 2032 real yield) - 1 at the valuation date"
+  source: data/market/mva_section34.csv
+  rationale: "7-year proxy for the euro HICP swap curve (paid data); SPEC §7.1"
+
+pension_increases: "min(max(CPI, 0), 3%) — from scheme_rules.yaml"
+deferred_revaluation: "min(CPI, 4%) — from scheme_rules.yaml"

@@ -1,6 +1,6 @@
 # SPEC: DB Pension Scheme Model
 
-Version 1.2 (2026-09-27). Changes from 1.1: teach-back questions go into the module notes instead of being asked (§1); State Pension source, ILT15 range, wind-up wording settled in M0 (§7); deferred revaluation uses the official statutory percentages and 'CPI' means the annual average change (§4, §5, §7.1); one limitation added (§13). Changes from 1.0 to 1.1: register date columns (§8), module notes (§1, §10), buy-in accounting condition (M11, M12), ECB curve date rule (§7.1), raw downloads folder (§7.1, §10).
+Version 1.3 (2026-09-27). Changes from 1.2: active service at the opening date U(12, 35), since the scheme closed at end-2012; generator settings in `config/data_gen.yaml`; 'salary with an extra zero' is x10 (§6.2). Changes from 1.1 to 1.2: teach-back questions go into the module notes instead of being asked (§1); State Pension source, ILT15 range, wind-up wording settled in M0 (§7); deferred revaluation uses the official statutory percentages and 'CPI' means the annual average change (§4, §5, §7.1); one limitation added (§13). Changes from 1.0 to 1.1: register date columns (§8), module notes (§1, §10), buy-in accounting condition (M11, M12), ECB curve date rule (§7.1), raw downloads folder (§7.1, §10).
 
 A model of a synthetic Irish final-salary (defined benefit) pension scheme. It values the same member benefits under IAS 19 and under the Irish Funding Standard (with the funding standard reserve), explains the gap between the two, rolls the scheme forward through 2025 on actual market data, measures risk, sizes a funding proposal and prices a pensioner buy-in.
 
@@ -91,13 +91,13 @@ Generate the opening snapshot at 2024-12-31, simulate 2025, produce the closing 
 
 | Status | Closing count (approx.) | Distribution used in the prototype |
 |---|---|---|
-| Active | 250 | age N(50, 7) clipped 35-64; service U(5, 35) capped at age - 22; salary lognormal(ln 65,000, 0.3) clipped EUR 40k-120k |
+| Active | 250 | age N(50, 7) clipped 35-64; service U(12, 35) capped at age - 22 (closed at end-2012, so at least 12 years at 2024-12-31); salary lognormal(ln 65,000, 0.3) clipped EUR 40k-120k |
 | Deferred | 300 | age U(35, 64); exit date 2000-2024; pension at exit lognormal(ln 6,000, 0.6) clipped EUR 2k-20k |
 | Pensioner | 450 | age 65 + Exp(mean 9) clipped 65-95; pension lognormal(ln 18,000, 0.45) clipped EUR 8k-45k |
 
 About 65% male in each group. Tune the generator so the design targets in section 12 hold.
 
-2025 movements (store in `movements_2025.csv`): salary increases (mean a little above the IAS 19 assumption, with individual noise), withdrawals, retirements at 65, deaths. Draw them with the IAS 19 decrement probabilities and the fixed seed. No new entrants.
+2025 movements (store in `movements_2025.csv`): salary increases (mean a little above the IAS 19 assumption, with individual noise), pension increases (1 January 2025, 2024 CPI annual average), withdrawals, retirements at 65, deaths. Draw them with the IAS 19 decrement probabilities (opening basis) and the fixed seed. No new entrants. Generator settings live in `config/data_gen.yaml`. Simplification: the few actives and deferreds who reach 65 in 2025 are not exposed to death before their birthday.
 
 Closing raw extract: opening + movements, then inject errors into about 2% of records, one or more of each type:
 
@@ -107,7 +107,7 @@ Closing raw extract: opening + movements, then inject errors into about 2% of re
 - service greater than age - 18
 - pensioner with zero pension
 - deferred member with a salary
-- salary of EUR 2m (extra zero)
+- salary with an extra zero (x10, above the EUR 500k range limit)
 - status active with a retirement date
 - a closing record that cannot be traced to an opening record and a movement
 

@@ -1,0 +1,63 @@
+# data_gen — SPEC §6.2. Design of the synthetic membership (not assumptions: nothing here is a valuation input).
+# Opening counts are set so that closing counts after simulated 2025 movements are about 250 / 300 / 450.
+
+seed: 20251231
+opening_date: 2024-12-31
+closing_date: 2025-12-31
+male_share: 0.65
+
+active:
+  count: 260
+  age_mean: 50
+  age_sd: 7
+  age_min: 35
+  age_max: 64.99
+  service_min: 12          # closed to new entrants at end-2012, so at least 12 years at 2024-12-31 (SPEC 1.2: was 5)
+  service_max: 35
+  min_age_at_joining: 22   # service capped at age - 22
+  salary_median: 65000
+  salary_sigma: 0.30       # lognormal
+  salary_min: 40000
+  salary_max: 120000
+
+deferred:
+  count: 310
+  age_min: 35
+  age_max: 64.99
+  exit_from: 2000-01-01
+  exit_to: 2024-12-31
+  min_age_at_exit: 25
+  service_at_exit_min: 2
+  min_age_at_joining: 22
+  pension_median: 6000
+  pension_sigma: 0.60
+  pension_min: 2000
+  pension_max: 20000
+
+pensioner:
+  count: 440
+  age_min: 65
+  age_max: 95
+  age_excess_mean: 9       # age = 65 + Exp(mean 9), clipped
+  service_min: 10          # service at retirement (history only)
+  service_max: 40
+  pension_median: 18000
+  pension_sigma: 0.45
+  pension_min: 8000
+  pension_max: 45000
+
+experience_2025:             # simulated member experience (synthetic)
+  salary_increase_mean: 0.035  # a little above the opening IAS 19 assumption (1.95% + 1.0% = 2.95%)
+  salary_increase_sd: 0.015
+  exit_date: 2025-07-01        # withdrawals and deaths at mid-year (SPEC §4); retirements on the 65th birthday
+
+errors:                      # injected into the closing raw extract (SPEC §6.2); about 2% of 1,000 records
+  missing_date_of_birth: 3
+  duplicate_member_id: 2
+  birth_after_joining: 2
+  service_exceeds_age_minus_18: 2
+  pensioner_zero_pension: 2
+  deferred_with_salary: 2
+  salary_extra_zero: 2
+  active_with_retirement_date: 3
+  untraceable_record: 2
