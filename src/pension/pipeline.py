@@ -7,7 +7,7 @@ from datetime import date
 import numpy as np
 import pandas as pd
 
-from pension import aoc, assets, bridge, cashflows, excel_build, figures, funding_standard, ias19, mva
+from pension import aoc, assets, bridge, cashflows, risk, excel_build, figures, funding_standard, ias19, mva
 from pension.io import MEMBERS, OUTPUTS, ROOT, load_config
 
 CLOSING = date(2025, 12, 31)
@@ -167,6 +167,21 @@ def run_funding_standard(members, total_assets):
     return out, r
 
 
+def run_risk(members, total_assets):
+    state = risk.base_state(members, CLOSING, total_assets, "2025-12-31")
+    results = risk.scenarios(state)
+    f = funding_standard.fsr(members, CLOSING, state["portfolio"], state["market"])
+    p = risk.pv01s(state, f)
+    base, down = results["base"], results["discount_minus_50bp"]
+    out = {"scenarios": results, "pv01": p,
+           "funding_level_change_minus_50bp": {
+               "ias19_pp": (down["ias19_funding_level"] - base["ias19_funding_level"]) * 100,
+               "fs_pp": (down["fs_funding_level"] - base["fs_funding_level"]) * 100}}
+    write_json("risk_2025.json", out)
+    figures.fig_tornado(results, OUTPUTS / "fig_tornado.png")
+    return out
+
+
 def run_bridge(members, fs_total, dbo):
     steps = bridge.run(members, CLOSING)
     out = {"steps": steps, "fs_minus_ias19": fs_total - dbo,
@@ -216,6 +231,7 @@ def main():
     out, r = run_ias19(members, assets=aoc_out["asset_reconciliation"]["closing"])
     fs_out, _ = run_funding_standard(members, out["assets"])
     br = run_bridge(members, fs_out["liabilities"]["total"], out["dbo"])
+    rk = run_risk(members, out["assets"])
     run_excel(members, r)
     run_cv_numbers()
     from pension import disclosure

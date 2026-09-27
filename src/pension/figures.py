@@ -83,3 +83,36 @@ def fig3_waterfall(w, path, market_date="2025-12-31"):
     fig.tight_layout(rect=(0, 0.04, 1, 1))
     fig.savefig(path, dpi=150)
     plt.close(fig)
+
+
+def fig_tornado(results, path, market_date="2025-12-31"):
+    """Supporting figure: change in the IAS 19 deficit under each one-at-a-time scenario (EUR m)."""
+    pairs = [("Discount rate -/+0.5%", "discount_minus_50bp", "discount_plus_50bp"),
+             ("Inflation +/-0.5%", "inflation_plus_50bp", "inflation_minus_50bp"),
+             ("Equities -20%", "equities_minus_20pct", None),
+             ("Life expectancy +1 year", "life_expectancy_plus_1", None),
+             ("Salary +/-0.5%", "salary_plus_50bp", "salary_minus_50bp")]
+    base = results["base"]["ias19_deficit"]
+    rows = []
+    for label, bad, good in pairs:
+        rows.append((label, (results[bad]["ias19_deficit"] - base) / 1e6,
+                     (results[good]["ias19_deficit"] - base) / 1e6 if good else 0.0))
+    rows.sort(key=lambda r: abs(r[1]) + abs(r[2]))
+    fig, ax = plt.subplots(figsize=(8, 4))
+    for i, (label, bad, good) in enumerate(rows):
+        ax.barh(i, bad, color="#C44E52")
+        ax.barh(i, good, color="#55A868")
+        ax.text(bad, i, f" {bad:+.1f}", va="center", ha="left" if bad >= 0 else "right", fontsize=8)
+        if good:
+            ax.text(good, i, f"{good:+.1f} ", va="center", ha="right" if good < 0 else "left", fontsize=8)
+    ax.set_yticks(range(len(rows)), [r[0] for r in rows])
+    lo, hi = min(r[2] for r in rows + [("", 0, 0)]), max(r[1] for r in rows)
+    ax.set_xlim(lo * 1.35, hi * 1.2)
+    ax.axvline(0, color="#555555", lw=0.8)
+    ax.set_xlabel("Change in IAS 19 deficit, EUR m (assets revalued)")
+    ax.set_title("Deficit sensitivity (IAS 19)")
+    ax.spines[["top", "right"]].set_visible(False)
+    footnote(fig, f"Synthetic members. Market data at {market_date}.")
+    fig.tight_layout(rect=(0, 0.05, 1, 1))
+    fig.savefig(path, dpi=150)
+    plt.close(fig)

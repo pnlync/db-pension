@@ -1,0 +1,110 @@
+{
+  "scenarios": {
+    "base": {
+      "ias19_dbo": 206799217.69741637,
+      "fs_liability": 203030506.52733937,
+      "assets": 204731225.44239753,
+      "ias19_deficit": 2067992.2550188303,
+      "ias19_funding_level": 0.9899999996226065,
+      "fs_surplus": 1700718.9150581658,
+      "fs_funding_level": 1.0083766668573482
+    },
+    "discount_minus_50bp": {
+      "ias19_dbo": 223948355.91645223,
+      "fs_liability": 210837862.3684619,
+      "assets": 210078528.47976506,
+      "ias19_deficit": 13869827.436687171,
+      "ias19_funding_level": 0.9380668485824404,
+      "fs_surplus": -759333.8886968493,
+      "fs_funding_level": 0.9963984937042767
+    },
+    "discount_plus_50bp": {
+      "ias19_dbo": 191688149.52470523,
+      "fs_liability": 195843419.58799157,
+      "assets": 199675481.42158762,
+      "ias19_deficit": -7987331.896882385,
+      "ias19_funding_level": 1.0416683656067793,
+      "fs_surplus": 3832061.8335960507,
+      "fs_funding_level": 1.019566967537933
+    },
+    "inflation_plus_50bp": {
+      "ias19_dbo": 223849355.90199828,
+      "fs_liability": 206659967.58850348,
+      "assets": 206333404.25462276,
+      "ias19_deficit": 17515951.647375524,
+      "ias19_funding_level": 0.9217511635144304,
+      "fs_surplus": -326563.3338807225,
+      "fs_funding_level": 0.9984198036141622
+    },
+    "inflation_minus_50bp": {
+      "ias19_dbo": 191668619.60676864,
+      "fs_liability": 198856191.79236284,
+      "assets": 203204015.85312015,
+      "ias19_deficit": -11535396.24635151,
+      "ias19_funding_level": 1.0601840628372958,
+      "fs_surplus": 4347824.060757309,
+      "fs_funding_level": 1.021864162345506
+    },
+    "salary_plus_50bp": {
+      "ias19_dbo": 212158608.38699788,
+      "fs_liability": 203030506.52733937,
+      "assets": 204731225.44239753,
+      "ias19_deficit": 7427382.944600344,
+      "ias19_funding_level": 0.9649913665956364,
+      "fs_surplus": 1700718.9150581658,
+      "fs_funding_level": 1.0083766668573482
+    },
+    "salary_minus_50bp": {
+      "ias19_dbo": 201806836.56418142,
+      "fs_liability": 203030506.52733937,
+      "assets": 204731225.44239753,
+      "ias19_deficit": -2924388.8782161176,
+      "ias19_funding_level": 1.0144910297787957,
+      "fs_surplus": 1700718.9150581658,
+      "fs_funding_level": 1.0083766668573482
+    },
+    "life_expectancy_plus_1": {
+      "ias19_dbo": 214607836.4110133,
+      "fs_liability": 207928668.3165548,
+      "assets": 204731225.44239753,
+      "ias19_deficit": 9876610.96861577,
+      "ias19_funding_level": 0.9539783302707537,
+      "fs_surplus": -3197442.8741572797,
+      "fs_funding_level": 0.9846224048850761
+    },
+    "equities_minus_20pct": {
+      "ias19_dbo": 206799217.69741637,
+      "fs_liability": 203030506.52733937,
+      "assets": 188352727.40700576,
+      "ias19_deficit": 18446490.290410608,
+      "ias19_funding_level": 0.9107999996527981,
+      "fs_surplus": -14677779.120333612,
+      "fs_funding_level": 0.9277065335087604
+    },
+    "combined": {
+      "ias19_dbo": 232812092.6560539,
+      "fs_liability": 216241048.3484953,
+      "assets": 193700030.44437328,
+      "ias19_deficit": 39112062.21168062,
+      "ias19_funding_level": 0.8320015864920598,
+      "fs_surplus": -22541017.904122025,
+      "fs_funding_level": 0.8957597640398284
+    }
+  },
+  "pv01": {
+    "ias19_liability": 321913.45380562544,
+    "fs_liability": 156147.11682245077,
+    "assets_by_class": {
+      "nominal_sovereigns": 60653.17584450543,
+      "inflation_linked_sovereigns": 30941.434149403125,
+      "corporates": 12432.966187663376
+    },
+    "assets": 104027.57618157193,
+    "hedge_ratio_ias19": 0.3231538631013068,
+    "hedge_ratio_fs": 0.6662151584896564
+  },
+  "funding_level_change_minus_50bp": {
+    "ias19_pp": -5.193315104016616,
+    "fs_pp": -1.197817315307148
+  }
+}

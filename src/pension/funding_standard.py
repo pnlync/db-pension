@@ -123,6 +123,16 @@ def wind_up_expenses(liabilities):
     return max(w["rate"] * liabilities, w["minimum_eur"])
 
 
+def liabilities_on(members, valuation_date, mva_npa, ann_basis, ann_curve, s34=None):
+    """FS liability total with explicit parameters (used by the analysis of change, scenarios and projections)."""
+    pens = (members.status == "P").to_numpy()
+    tv, _ = transfer_values(members[~pens], s34 or s34_basis(valuation_date), mva_npa)
+    ann, _ = annuity_costs(members[pens], ann_basis, ann_curve)
+    base = tv.sum() + ann.sum()
+    return {"non_pensioners": tv.sum(), "pensioners": ann.sum(), "expenses": wind_up_expenses(base),
+            "total": base + wind_up_expenses(base)}
+
+
 def liabilities(members, valuation_date, rate_shift=0.0):
     """FS liabilities by component; rate_shift < 0 applies the FSR interest-rate test (PEN-3 para 3.2):
     pensioner annuity cost on the lower curve; non-pensioners only through MVA_post (j lower);
